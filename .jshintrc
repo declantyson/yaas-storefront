@@ -20,11 +20,12 @@
   "smarttabs": true,
   "globals": {
     "angular": false,
+	"Worldpay" : false,
     "Masonry": false,
     "_": false,
     "Spinner": false,
     "$": false,
-      "FB": false
+    "FB": false
   },
   "laxcomma": true
 }

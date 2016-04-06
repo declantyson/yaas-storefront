@@ -66,18 +66,9 @@ angular.module('ds.checkout')
 
                 // the promise handle to the result of the transaction
                 var deferred = $q.defer();
-                var stripeData = {};
-                /* jshint ignore:start */
-                var creditCard = order.creditCard;
-                stripeData.number = creditCard.number;
-                stripeData.exp_month = creditCard.expMonth;
-                stripeData.exp_year = creditCard.expYear;
-                stripeData.cvc = creditCard.cvc;
-                /* jshint ignore:end */
-
                 var self = this;
                 try {
-
+                    // TODO use worldpay payment service
                     StripeJS.createToken(stripeData, function (status, response) {
 
                         if (response.error) {
