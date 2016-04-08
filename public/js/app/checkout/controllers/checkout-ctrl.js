@@ -419,7 +419,6 @@ angular.module('ds.checkout')
             $scope.placeOrder = function (formValid, form) {
                 $scope.message = null;
                 $scope.$broadcast('submitting:form', form);
-                //TODO validate card with the worldpay library perhaps - something with filters and validation etc.
                 if (formValid) {
 
                     modal.open({
@@ -445,14 +444,15 @@ angular.module('ds.checkout')
 
                     createWorldpayToken(worldpayData, function (responseCode, response) {
                         if (responseCode === 200) {
-                            //Hurraaaah
-                            $scope.order.payment.token = response.token;
+                            $scope.order.payment.customAttributes.token = response.token;
+                            $scope.order.payment.customAttributes.orderDescription = response.token;
+                            CheckoutSvc.checkout($scope.order).then(checkoutSuccessHandler, checkoutErrorHandler);
                         } else {
-                            //errorstuff
+                            // TODO error handling with the response, containing an array of errors.
+                            $scope.showPristineErrors = true;
+                            $scope.message = 'PLEASE_CORRECT_ERRORS';
                         }
                     });
-
-                    CheckoutSvc.checkout($scope.order).then(checkoutSuccessHandler, checkoutErrorHandler);
 
                 } else {
                     $scope.showPristineErrors = true;
@@ -652,7 +652,7 @@ angular.module('ds.checkout')
                 }
 
                 var data = {
-                    reusable: Worldpay.reusable,
+                    reusable: true,
                     paymentMethod: {
                         type: 'Card',
                         name: worldpayData.name,
@@ -661,7 +661,7 @@ angular.module('ds.checkout')
                         cardNumber: worldpayData.number,
                         cvc: worldpayData.cvc
                     },
-                    clientKey: 'T_C_f10dc48e-95b2-4830-a342-45502b342791'
+                    clientKey: Worldpay.clientKey
                 };
                 if (worldpayData['language-code']) {
                     data.shopperLanguageCode = worldpayData['language-code'];
