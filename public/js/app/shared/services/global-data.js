@@ -348,7 +348,6 @@ angular.module('ds.shared')
                         //Set stripe key if defined
                         if (!!site.payment && site.payment.length > 0 && !!site.payment[0].configuration && !!site.payment[0].configuration.public && !!site.payment[0].configuration.public.publicKey) {
                             /* jshint ignore:start */
-                            Stripe.setPublishableKey(site.payment[0].configuration.public.publicKey);
                             Worldpay.clientKey = site.payment[0].configuration.public.publicKey;
                             /* jshint ignore:end */
                         }
