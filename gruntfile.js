@@ -5,7 +5,7 @@ var path = require('path');
 module.exports = function (grunt) {
 
     var host = process.env.VCAP_APP_HOST || '0.0.0.0';
-    var port = process.env.VCAP_APP_PORT || 9000;
+    var port = process.env.PORT || 9000;
 
     // Configuration Variables.
     var JS_DIR = 'public/js/app',

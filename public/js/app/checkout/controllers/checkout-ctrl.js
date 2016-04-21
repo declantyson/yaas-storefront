@@ -434,18 +434,19 @@ angular.module('ds.checkout')
                     $scope.order.cart = $scope.cart;
                     $scope.order.shipping = angular.fromJson($scope.shippingCost);
 
-                    var worldpayData = {};
                     var creditCard = order.creditCard;
-                    worldpayData.name = order.billTo.contactName;
-                    worldpayData.number = creditCard.number;
-                    worldpayData.expMonth = creditCard.expMonth;
-                    worldpayData.expYear = creditCard.expYear;
-                    worldpayData.cvc = creditCard.cvc;
+                    var worldpayData = {
+                        name: order.billTo.contactName,
+                        number: creditCard.number,
+                        expMonth: creditCard.expMonth,
+                        expYear: creditCard.expYear,
+                        cvc: creditCard.cvc
+                    };
 
                     createWorldpayToken(worldpayData, function (responseCode, response) {
                         if (responseCode === 200) {
                             $scope.order.payment.customAttributes.token = response.token;
-                            $scope.order.payment.customAttributes.orderDescription = response.token;
+                            $scope.order.payment.customAttributes.orderDescription = response.token;//TODO BOOOOO!!!
                             CheckoutSvc.checkout($scope.order).then(checkoutSuccessHandler, checkoutErrorHandler);
                         } else {
                             // TODO error handling with the response, containing an array of errors.
@@ -453,8 +454,8 @@ angular.module('ds.checkout')
                             $scope.message = 'PLEASE_CORRECT_ERRORS';
                         }
                     });
-
-                } else {
+                }
+                else {
                     $scope.showPristineErrors = true;
                     $scope.message = 'PLEASE_CORRECT_ERRORS';
                     // Important debug for dynamic form validation.
@@ -652,7 +653,7 @@ angular.module('ds.checkout')
                 }
 
                 var data = {
-                    reusable: true,
+                    reusable: false,
                     paymentMethod: {
                         type: 'Card',
                         name: worldpayData.name,
@@ -716,4 +717,5 @@ angular.module('ds.checkout')
                 }
             };
 
-        }]);
+        }])
+;
