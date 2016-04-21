@@ -23,7 +23,7 @@
     "postinstall": "bower install",
     "wm-update": "./node_modules/protractor/bin/webdriver-manager update",
     "wm-start": "./node_modules/protractor/bin/webdriver-manager start",
-    "protractor": "./node_modules/protractor/bin/protractor test/e2e/conf.js"
+    "protractor": "./node_modules/protractor/bin/protractor test/e2e/cucumber-tests/conf.js"
   },
   "dependencies": {
     "async": "~0.9.0",
@@ -78,6 +78,7 @@
     "protractor": "^3.2.2",
     "protractor-cucumber-framework": "^0.5.0",
     "protractor-screenshot-reporter": "0.0.5",
+    "request": "^2.36.0",
     "resemblejs": "^1.0.1"
   },
   "author": "hybris",

@@ -1,6 +1,6 @@
 exports.config = {
   framework: 'custom',
-  frameworkPath: require.resolve('../../node_modules/protractor-cucumber-framework'),
+  frameworkPath: require.resolve('../../../node_modules/protractor-cucumber-framework'),
   specs: [
     './features/checkout.feature',
   ],

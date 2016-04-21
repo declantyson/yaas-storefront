@@ -1,10 +1,5 @@
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-chai.use(chaiAsPromised);
-var expect = chai.expect;
-var should = chai.should();
-
-var EC = protractor.ExpectedConditions;
+var helpers = require('./helpers.js');
+var eC = protractor.ExpectedConditions;
 
 
 var Storefront = function () {
@@ -84,10 +79,14 @@ Storefront.prototype.checkout = {
   cvcField: function () {
     return element(by.id('cvc'));
   },
+  orderTotalElement: function () {
+    return element(by.xpath('(//td[text()="Order Total"]/../td[2])[1]'));
+  },
   placeOrderButton: function () {
     return element(by.id('place-order-btn'));
   }
 };
+
 
 Storefront.prototype.orderConfirmation = {
   orderNumberH2: function () {
@@ -96,19 +95,19 @@ Storefront.prototype.orderConfirmation = {
 };
 
 //============== Actions
-Storefront.prototype.addProductToCart = function (product) {
+Storefront.prototype.addProductToCart = function (product, callback) {
   this.homepage.productLink(product).click();
-  this.pdp.addToCartButton().click();
+  this.pdp.addToCartButton().click().then(callback);
 };
 
 Storefront.prototype.selectCheckoutAsGuest = function () {
-  browser.wait(EC.presenceOf(this.cart.checkoutButton()), 10000);
+  browser.wait(eC.presenceOf(this.cart.checkoutButton()), 10000);
   this.cart.checkoutButton().click();
-  browser.wait(EC.presenceOf(this.loginRegister.checkoutAsGuestButton()), 10000);
+  browser.wait(eC.presenceOf(this.loginRegister.checkoutAsGuestButton()), 10000);
   this.loginRegister.checkoutAsGuestButton().click();
 };
 
-Storefront.prototype.submitBillingAddress = function (details) {
+Storefront.prototype.submitBillingAddress = function (details, callback) {
   this.checkout.titleSelectList('Mr.').click();
   this.checkout.firstNameField().sendKeys(details['First Name']);
   this.checkout.lastNameField().sendKeys(details['Last Name']);
@@ -120,22 +119,18 @@ Storefront.prototype.submitBillingAddress = function (details) {
     this.checkout.stateSelectList(details['State']).click();
   }
   this.checkout.postalCodeField().sendKeys(details['Postal Code']);
-  this.checkout.previewOrderButton().click();
+  this.checkout.previewOrderButton().click().then(callback);
 };
-Storefront.prototype.enterCardDetails = function (details) {
+Storefront.prototype.enterCardDetails = function (details, callback) {
   this.checkout.cardNumberField().sendKeys(details['Card Number']);
   this.checkout.monthSelectList(details['Month']).click();
   this.checkout.yearSelectList(details['Year']).click();
-  this.checkout.cvcField().sendKeys(details['CVC']);
+  this.checkout.cvcField().sendKeys(details['CVC']).then(callback);
 };
 
-Storefront.prototype.verifyElementText = function (callback, element, expectedText) {
-  var elementText = element.getText();
-  elementText.should.eventually.equal(expectedText).notify(callback);
-};
-
-Storefront.prototype.verifyElementPresent = function (callback, element) {
-  browser.waitForAngular().then(element.isPresent()).should.eventually.equal(true).notify(callback);
+//============== Helpers
+Storefront.prototype.verifyElementPresent = function (element, callback) {
+  helpers.verifyElementPresent(element, callback);
 };
 
 module.exports = new Storefront();
