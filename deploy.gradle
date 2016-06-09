@@ -1,0 +1,35 @@
+cloudfoundry {
+	application = 'digitalselling'
+	hosts = [application]
+	host = application
+	buildpack = 'nodejs_buildpack'
+	file = file('.')
+	memory = 512
+	healthCheckTimeout = 180
+	trustSelfSignedCerts = true
+	variants = ['-blue', '-green']
+	env = [
+			"LANG"              : "en_US.UTF-8",
+			"TEAM_NAME"         : "e2y",
+			"CF_STARTUP_TIMEOUT": "180",
+			"APP_NAME"      	: application
+	]
+	command = 'node node_modules/grunt-cli/bin/grunt singleProject:prod'
+	username = 'eusebio.trigo@e2x.co.uk'
+	space = 'development'
+}
+
+if (project.hasProperty('pivotal')) {
+	cloudfoundry {
+		target = 'https://api.run.pivotal.io'
+		organization = 'e2y'
+		space = 'development'
+		domain = 'cfapps.io'
+		instances = 1
+		env << [
+				"NODE_ENV"      : "pivotal",
+				"CLIENT_ID"     : "i82tETHlMRtEETMb16ItnedGe7O1y1Di",
+				"CLIENT_SECRET" : "6gxwBWSQUqSaZ8pu"
+			]
+	}
+}
