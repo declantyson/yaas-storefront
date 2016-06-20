@@ -21,7 +21,7 @@ angular.module('ds.products')
             $scope.pageNumber = 0;
             $scope.setSortedPageSize = void 0;
             $scope.setSortedPageNumber = 1;
-            $scope.sort = '';
+            $scope.sort = 'metadata.createdAt:desc';
             $scope.products = [];
             $scope.total = GlobalData.products.meta.total;
             $scope.store = GlobalData.store;
