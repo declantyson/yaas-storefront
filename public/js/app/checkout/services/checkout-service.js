@@ -105,101 +105,104 @@ angular.module('ds.checkout')
                     return deferred.promise;
                 },
 
-                /**
-                 * Issues a Orders 'save' (POST) on the order resource.
-                 * Uses the CartSvc to retrieve the current set of line items.
-                 * @param order
-                 * @return The result array as returned by Angular $resource.query().
-                 */
-                createOrder: function (order) {
-                    var Order = function () {
-                    };
-                    var newOrder = new Order();
-                    newOrder.cartId = order && order.cart && order.cart.id ? order.cart.id : null;
-                    newOrder.payment = order.payment;
-                    newOrder.currency = order.cart.currency;
+            /**
+             * Issues a Orders 'save' (POST) on the order resource.
+             * Uses the CartSvc to retrieve the current set of line items.
+             * @param order
+             * @return The result array as returned by Angular $resource.query().
+             */
+            createOrder: function(order) {
+                var Order = function () {};
+                var newOrder = new Order();
+                newOrder.cartId = order && order.cart && order.cart.id ? order.cart.id : null;
+                newOrder.payment = order.payment;
+                newOrder.currency = order.cart.currency;
+                if (order.shipping) {
                     newOrder.shipping = {
                         methodId: order.shipping.id,
-                        amount: order.shipping.fee.amount
+                        amount: order.shipping.fee.amount,
+                        zoneId: order.shipping.zoneId
                     };
-
-                    newOrder.totalPrice = order.cart.totalPrice.amount;
-                    newOrder.addresses = [];
-                    var billTo = {};
-                    billTo.contactName = order.billTo.contactName;
-                    billTo.companyName = order.billTo.companyName;
-                    billTo.street = order.billTo.address1;
-                    billTo.streetAppendix = order.billTo.address2;
-                    billTo.city = order.billTo.city;
-                    billTo.state = order.billTo.state;
-                    billTo.zipCode = order.billTo.zipCode;
-                    billTo.country = order.billTo.country;
-                    billTo.account = order.account.email;
-                    billTo.contactPhone = order.billTo.contactPhone;
-                    billTo.type = 'BILLING';
-                    newOrder.addresses.push(billTo);
-
-                    var shipTo = {};
-                    shipTo.contactName = order.shipTo.contactName;
-                    shipTo.companyName = order.shipTo.companyName;
-                    shipTo.street = order.shipTo.address1;
-                    shipTo.streetAppendix = order.shipTo.address2;
-                    shipTo.city = order.shipTo.city;
-                    shipTo.state = order.shipTo.state;
-                    shipTo.zipCode = order.shipTo.zipCode;
-                    shipTo.country = order.shipTo.country;
-                    shipTo.account = order.account.email;
-                    shipTo.contactPhone = order.shipTo.contactPhone;
-                    shipTo.type = 'SHIPPING';
-                    newOrder.addresses.push(shipTo);
-
-                    newOrder.customer = {};
-                    newOrder.customer.id = order.cart.customerId;
-                    if (order.account.title && order.account.title !== '') {
-                        newOrder.customer.title = order.account.title;
-                    }
-                    if (order.account.firstName && order.account.firstName !== '') {
-                        newOrder.customer.firstName = order.account.firstName;
-                    }
-                    if (order.account.middleName && order.account.middleName !== '') {
-                        newOrder.customer.middleName = order.account.middleName;
-                    }
-                    if (order.account.lastName && order.account.lastName !== '') {
-                        newOrder.customer.lastName = order.account.lastName;
-                    }
-                    newOrder.customer.email = order.account.email;
-
-                    // Will be submitted as "hybris-user" request header
-                    settings.hybrisUser = order.account.email;
-
-                    return CheckoutREST.Checkout.all('checkouts').all('order').post(newOrder);
-                },
-
-                /** Returns the shipping costs for this tenant.  If no cost found, it will be set to zero.
-                 */
-                getShippingCost: function () {
-                    var deferred = $q.defer();
-
-                    var defaultCost = {};
-                    defaultCost.price = {};
-                    defaultCost.price[GlobalData.getCurrencyId()] = 0;
-
-                    CheckoutREST.ShippingCosts.all('shippingcosts').getList().then(function (shippingCosts) {
-                        var costs = shippingCosts.length && shippingCosts[0].price ? shippingCosts[0].plain() : defaultCost;
-                        deferred.resolve(costs);
-                    }, function (failure) {
-                        if (failure.status === 404) {
-                            deferred.resolve(defaultCost);
-                        } else {
-                            deferred.reject(failure);
-                        }
-                    });
-
-                    return deferred.promise;
-                },
-
-                resetCart: function () {
-                    CartSvc.resetCart();
                 }
-            };
-        }]);
+
+                newOrder.totalPrice = order.cart.totalPrice.amount;
+                newOrder.addresses = [];
+                var billTo = {};
+                billTo.contactName = order.billTo.contactName;
+                billTo.companyName = order.billTo.companyName;
+                billTo.street = order.billTo.address1;
+                billTo.streetAppendix = order.billTo.address2;
+                billTo.city = order.billTo.city;
+                billTo.state = order.billTo.state;
+                billTo.zipCode = order.billTo.zipCode;
+                billTo.country = order.billTo.country;
+                billTo.account = order.account.email;
+                billTo.contactPhone = order.billTo.contactPhone;
+                billTo.type = 'BILLING';
+                newOrder.addresses.push(billTo);
+
+                var shipTo = {};
+                shipTo.contactName = order.shipTo.contactName;
+                shipTo.companyName = order.shipTo.companyName;
+                shipTo.street = order.shipTo.address1;
+                shipTo.streetAppendix = order.shipTo.address2;
+                shipTo.city = order.shipTo.city;
+                shipTo.state = order.shipTo.state;
+                shipTo.zipCode = order.shipTo.zipCode;
+                shipTo.country = order.shipTo.country;
+                shipTo.account = order.account.email;
+                shipTo.contactPhone = order.shipTo.contactPhone;
+                shipTo.type = 'SHIPPING';
+                newOrder.addresses.push(shipTo);
+
+                newOrder.customer = {};
+                newOrder.customer.id = order.cart.customerId;
+                if (order.account.title && order.account.title !== '') {
+                    newOrder.customer.title = order.account.title;
+                }
+                if (order.account.firstName && order.account.firstName !== '') {
+                    newOrder.customer.firstName = order.account.firstName;
+                }
+                if (order.account.middleName && order.account.middleName !== '') {
+                    newOrder.customer.middleName = order.account.middleName;
+                }
+                if (order.account.lastName && order.account.lastName !== '') {
+                    newOrder.customer.lastName = order.account.lastName;
+                }
+                newOrder.customer.email = order.account.email;
+
+                // Will be submitted as "hybris-user" request header
+                settings.hybrisUser = order.account.email;
+
+                return CheckoutREST.Checkout.all('checkouts').all('order').post(newOrder);
+            },
+
+            /** Returns the shipping costs for this tenant.  If no cost found, it will be set to zero.
+             */
+            getShippingCost: function() {
+                var deferred = $q.defer();
+
+                var defaultCost = {};
+                defaultCost.price = {};
+                defaultCost.price[GlobalData.getCurrencyId()] = 0;
+
+                CheckoutREST.ShippingCosts.all('shippingcosts').getList().then(function(shippingCosts){
+                    var costs = shippingCosts.length && shippingCosts[0].price ? shippingCosts[0].plain() : defaultCost;
+                    deferred.resolve(costs);
+                }, function(failure){
+                    if (failure.status === 404) {
+                        deferred.resolve(defaultCost);
+                    } else {
+                        deferred.reject(failure);
+                    }
+                });
+
+                return deferred.promise;
+            },
+
+            resetCart: function () {
+                CartSvc.resetCart();
+            }
+
+        };
+    }]);

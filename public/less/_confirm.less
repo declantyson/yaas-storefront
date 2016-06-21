@@ -13,6 +13,8 @@
     text-transform: uppercase;
     margin-bottom: 0;
     min-height: 1px;
+    font-weight: bold;
+    color:@offblack;
 
   }
 
@@ -21,7 +23,7 @@
   }
 
   .orderNumber {
-    color: #0079ff;
+    color: @link-color;
     font-weight: bold;
   }
 
@@ -56,7 +58,6 @@
   }
 
   #create-acct-btn {
-    width: 200px;
     margin: 0 auto;
   }
 
@@ -70,8 +71,7 @@
   }
 
   .socialMediaSigninContainer {
-    max-width: 430px;
-    margin-bottom: 15px;
+    margin: 15px 0;
   }
 
   .order-details {
@@ -117,6 +117,33 @@
   .order-items {
     padding: 0 15px;
 
+    .item-list{
+      padding: 0;
+
+      table{
+        th, td{
+            border: none;
+            font-weight: normal;
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) {
+            background-color: #ebeced;
+        }
+
+        .img-col{
+          width:120px;
+
+          img{
+            max-width: 90px;
+          }
+        }
+        .margin-cell{
+          width:20%;
+        }
+      }
+    }
+
   }
 
   .order-detail {
@@ -127,7 +154,6 @@
     }
     .cart-item.item-attr {
       margin-bottom: 0px;
-//      margin-text-outline:;
       p: 0px;
     }
   }
@@ -155,10 +181,29 @@
     margin-top: 0;
   }
 
+  .summary{
+    margin-top: 45px;
+  }
 
-    .summary{
-      margin-top: 45px;
+  .summary-row{
+    td{
+      background: @white;
+      padding-right: 7px;
+      text-transform: uppercase;
+      color: @gray;
     }
+    .product-details-mobile{
+      line-height: 25px;
+    }
+    .order-total{
+      font-size: 21px; 
+      color:@gray-base;
+      border-top: 1px solid @gray-lighter;
+      td{
+        font-weight: bold;
+      }
+    }
+  }
   
 	@media screen and (min-width: @screen-sm-min) {
       

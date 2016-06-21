@@ -1,7 +1,7 @@
 /**
  * [y] hybris Platform
  *
- * Copyright (c) 2000-2015 hybris AG
+ * Copyright (c) 2000-2016 hybris AG
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of hybris
@@ -85,7 +85,6 @@ angular.module('ds.cart')
             /** Retrieves the current cart state from the service, updates the local instance
              * and fires the 'cart:updated' event.*/
             function refreshCart(cartId, updateSource, closeCartAfterTimeout) {
-
                 var defCart = $q.defer();
                 var defCartTemp = $q.defer();
 
@@ -200,7 +199,7 @@ angular.module('ds.cart')
                         productId: cart.items[i].product.id,
                         quantity: cart.items[i].quantity,
                         unitPrice:{
-                            amount: cart.items[i].price.originalAmount,
+                            amount: cart.items[i].price.effectiveAmount,
                             currency: cart.items[i].price.currency
                         },
                         taxCode:cart.items[i].taxCode
@@ -286,6 +285,9 @@ angular.module('ds.cart')
                         }
                     });
                 },
+                
+                // Exposed for use in mixin services, like cart-note-mixin-service.js
+                refreshCart: refreshCart,
 
                 /** Persists the cart instance via PUT request (if qty > 0). Then, reloads that cart
                  * from the API for consistency and in order to display the updated calculations (line item totals, etc).
@@ -329,7 +331,7 @@ angular.module('ds.cart')
                         });
                     });
                 },
-
+                
                 /*
                  *   Adds a product to the cart, updates the cart (PUT) and then retrieves the updated
                  *   cart information (GET).
@@ -367,6 +369,12 @@ angular.module('ds.cart')
                     });
                 },
 
+                removeCoupon: function (cartId, couponId) {
+                    return CartREST.Cart.one('carts', cartId).one('discounts', couponId).remove().then(function () {
+                        refreshCart(cartId, 'manual');
+                    });
+                },
+
                 getCalculateTax: function () {
                     if (!!cart && !!cart.countryCode && !!cart.zipCode) {
                         return {
@@ -386,16 +394,21 @@ angular.module('ds.cart')
 
                 recalculateCart: function (cart, addressToShip, shippingCostObject) {
                     var items = reformatCartItems(cart);
+                    var discounts = [];
+                    angular.forEach(cart.discounts, function(discount){
+                        discounts.push({
+                            discountRate: discount.discountRate,
+                            amount: discount.amount,
+                            currency: discount.currency,
+                            calculationType: discount.calculationType
+                        });
+                    });
                     var data = {
                         cartId: cart.id,
                         siteCode: GlobalData.getSiteCode(),
                         currency: GlobalData.getCurrency(),
-                        shipping: {
-                            calculationType: 'QUOTATION',
-                            methodId: shippingCostObject.id,
-                            zoneId: shippingCostObject.zoneId
-                        },
                         items: items,
+                        discounts: discounts,
                         addresses: [
                             {
                               type: 'SHIP_TO',
@@ -407,6 +420,13 @@ angular.module('ds.cart')
                             }
                         ]
                     };
+                    if (shippingCostObject) {
+                        data.shipping = {
+                            calculationType: 'QUOTATION',
+                            methodId: shippingCostObject.id,
+                            zoneId: shippingCostObject.zoneId
+                        };
+                    }
                     return CartREST.CalculateCart.all('calculation').customPOST(data, '');
                 }
 
