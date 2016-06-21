@@ -282,11 +282,17 @@ a.signin{
   padding-left: 0;
   padding-top: 4px;
   padding-right: 7px;
-  color: @black;
+  color: @white;
+  font-size: 13px;
+  float: right;
+  margin-top: -9px;
+  transition: color 0.25s ease-out;
   &:hover{
     text-decoration: none;
     color: #0079ff;
-
+  }
+  img, p {
+    cursor: pointer;
   }
 }
 
@@ -597,8 +603,22 @@ a.signout{
 
 .desktopNav{
 
+  background-color: @darkestgrey;
+
   .logo{
-    margin-top: 3px;
+    margin-top: 8px;
+    font-family: 'LemonMilk', 'Helvetica', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: @white;
+    transition: color 0.25s ease-out;
+    &:hover {
+      text-decoration: none;
+      color: @defaultgrey;
+    }
+    &:focus {
+      text-decoration: none;
+    }
   }
 
   .y-search{
@@ -632,7 +652,6 @@ a.signout{
     }
   }
 
-  .row.info,
   .row.nav{
     border-bottom: 1px solid #d4d5d5;
   }
@@ -648,19 +667,16 @@ a.signout{
     }
 
   }
-
-
 }
 
 .yamm .dropdown.yamm-fw .dropdown-menu{
-  background-color: #d6dbde;
+  background-color: rgba(255, 255, 255, 0.9);
   margin-left: -45px;
   margin-right: -45px;
   margin-top: 9px;
-  padding: 45px 58px;
+  padding: 20px 0 10px 0;
   border: none;
   box-shadow: none;
-
   .secondaryCategory{
     color: @black;
     font-size: 14px;
@@ -668,7 +684,6 @@ a.signout{
     &:hover{
       color: @lightblue;
     }
-
   }
 }
 
@@ -685,16 +700,14 @@ a.signout{
 
   a{
     text-decoration: none;
-
-  }
-
-
-  a.mainCategory{
-    padding-top: 0;
-    padding-bottom: 4px;
-    background-color: transparent;
-    color: @black;
-    font-weight: 500;
+    &.mainCategory {
+      padding: 0 0 8px 0;
+      margin: 0 15px;
+      background-color: transparent;
+      color: @defaultgrey;
+      font-weight: 200;
+      transition: color 0.2s ease-out;
+    }
   }
 
   li.open{
@@ -707,13 +720,18 @@ a.signout{
 
   li{
     a.mainCategory.mactive{
-      color: #0079ff;
-
+      border-bottom: solid 4px #0079ff;
+      padding-bottom: 4px;
     }
 
     a.mainCategory:hover{
       background-color: transparent !important;
-      color: #0079ff;
+      color: @white;
+    }
+
+    a.mainCategory:focus {
+      background-color: transparent !important;
+      color: @white;
     }
   }
 
@@ -753,24 +771,30 @@ a.signout{
 
 }
 
-.mobileNav .top-navigation{
-  border-bottom: 1px solid #d4d5d5;
-
-
+.mobileNav {
+  .top-navigation {
+    border-bottom: 1px solid #d4d5d5;
+    background-color: @darkestgrey;
+  }
+  .hyicon-menu:before {
+    color: @white;
+  }
 }
 
 .breadcrumb-container{
-  background-color: #f6f6f7;
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
   height: 38px;
   padding: 10px 58px 0 58px;
-
   a{
     color: #7d7e7f;
 
   }
 
   .breadCrumbText{
-    font:13px @font-family-serif;
+    font-size: 13px;
     color: #7d7e7f;
     margin: 0 0 15px 0;
   }
@@ -827,7 +851,7 @@ a.signout{
     margin: 0 20px;
   }
 
- 
+
 }
 
 @media (max-width: @screen-md-min) {
@@ -904,7 +928,7 @@ a.signout{
     }
 }
 
-    
+
 .regionControls {
     .controlcontainer{
         display:  inline-block;
@@ -936,7 +960,7 @@ a.signout{
             color:@darkestgrey;
         }
     }
- 
+
     @media (max-width: @screen-md-min) {
         .regionControls{
           padding: 38px 0;

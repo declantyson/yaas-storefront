@@ -7,6 +7,13 @@
   &.g6 .item{.make-xs-column(1)}
 
   .item{
+    transition: opacity 0.4s linear, margin 0.4s ease-out;
+    opacity: 0;
+    margin-top: 20px;
+    &.ready {
+      opacity: 1;
+      margin-top: 0;
+    }
     a{
       display: block;
       background: #fff;
@@ -25,22 +32,25 @@
         overflow: hidden;
 
         img{
-          width: 100%;
-          height: auto;
+          max-width: 100%;
+          max-height: 100%;
+          @media screen and (max-width: 540px) {
+            width: 200px;
+          }
         }
       }
 
       .name{
         margin: 0 20px;
         font-size: 17px;
-        text-transform: uppercase;
-        font-weight: bold;
+        font-weight: 200;
         color: #3c3c3c;
         overflow: hidden;
       }
 
       .price{
-        font:17px @font-family-serif, sans-serif;
+        font-size: 17px;
+        font-weight: 700;
         color: #3c3c3c;
       }
     }
@@ -91,6 +101,39 @@ section .hero-unit{
   }
 }
 
+// different classes for different products test
+
+.category-header {
+  background-size: cover;
+  background-position: center;
+  height: 200px;
+  .text-center {
+    height: 200px;
+    display: table;
+    .pageTitle {
+      margin: 0;
+      display: table-cell;
+      vertical-align: middle;
+      font-family: 'LemonMilk', 'Helvetica', sans-serif;
+      color: @white;
+    }
+  }
+  .kitchen-appliances &, .blender & {
+    background-image: url(/img/stock/blender.jpg);
+  }
+  .glasses & {
+    background-image: url(/img/stock/glass.jpg);
+  }
+  .mugs & {
+    background-image: url(/img/stock/mug.jpg);
+  }
+  .cutting-boards & {
+    background-image: url(/img/stock/board.jpg);
+  }
+  .toaster & {
+    background-image: url(/img/stock/toast.jpg);
+  }
+}
 
 /*Affix between hero unit and products lists which track number of viewed products*/
 
@@ -144,7 +187,7 @@ section .hero-unit{
     }
 
     .name{
-      font: 13px @font-family-serif, sans-serif;
+      font-size: 13px;
       color: #7d7e7f;
       float: left;
       line-height: 46px;
@@ -212,6 +255,11 @@ section .hero-unit{
   .viewingContainer{
     text-align: right;
     line-height: 46px;
+    opacity: 0;
+    transition: opacity 0.25s linear;
+    &.ready {
+      opacity: 1;
+    }
 
     .name{
       float: none;
@@ -220,7 +268,8 @@ section .hero-unit{
 
     .page-indicator{
       display: inline-block;
-      font:italic 20px @font-family-serif, sans-serif;
+      font-size: 13px;
+      font-weight: 200;
       color: #0079ff;
       line-height: 46px;
       height: 46px;
@@ -367,8 +416,6 @@ section .hero-unit{
   left: 0;
   right: 0;
 }
-
-
 
 @media screen and (min-width: @screen-xs) {
   

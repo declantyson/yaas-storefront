@@ -32,8 +32,8 @@ angular.module('ds.shared')
 
                     return (
                         //Used 100 instead of 0 because of the top navigation
-                    rect.top >= 100 &&
-                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+                    rect.bottom >= 100 &&
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight)
                     );
                 };
 
@@ -101,13 +101,13 @@ angular.module('ds.shared')
                         if (e.type === 'scroll') {
                             //Get all elements from currently shown index - 3 until the end
                             // elements = element.querySelectorAll(':nth-child(n+' + queryIndex + ') .productInfoContainer');
-                            elements = element.querySelectorAll('.productInfoContainer').slice(scope.pagination.productsFrom - 1);
+                            elements = element.querySelectorAll('.product-grid .item').slice(scope.pagination.productsFrom - 1);
 
                             offset = firstIndex;
                         }
                         else {
                             //Loop over all elements
-                            elements = element.querySelectorAll('.productInfoContainer');
+                            elements = element.querySelectorAll('.product-grid .item');
 
                             //Set offset to 1 because looping is done over all elements
                             offset = 1;
@@ -149,6 +149,7 @@ angular.module('ds.shared')
                 };
 
                 $window.on('resize scroll', handler);
+                scope.$on('itemRepeaterFinished', handler);
 
                 scope.$on('initialViewportCheck', function () {
                   //Fire this event when the list finished rendering on page and DOM is completed

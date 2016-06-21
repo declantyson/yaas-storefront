@@ -41,7 +41,7 @@ angular.module('ds.products')
             }
 
             $scope.lastCatId = $scope.category.id || 'allProducts';
-
+            $scope.categoryClass = $scope.category.name.toLowerCase().replace(' ', '-') || '';
 
 
             $scope.loadedPages = 1;
@@ -318,4 +318,21 @@ angular.module('ds.products')
                 $scope.refineContainerShowing = !$scope.refineContainerShowing;
             };
 
+            $scope.showItem = function(el, timeout) {
+                setTimeout(function(){
+                    el.setAttribute('class', el.getAttribute('class') + ' ready');
+                }, timeout);
+            };
+
+            $scope.$on('itemRepeaterFinished', function() {
+                document.querySelector('.viewingContainer').setAttribute('class', 'viewingContainer ready');
+                var items = document.querySelectorAll('.product-grid .item');
+                var timeout = 0;
+                for(var i = 0; i < items.length; i++) {
+                    $scope.showItem(items[i], timeout);
+                    if(timeout < 800) {
+                        timeout += 200;
+                    }
+                }
+            });
         }]);
