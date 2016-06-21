@@ -41,8 +41,11 @@ angular.module('ds.products')
             }
 
             $scope.lastCatId = $scope.category.id || 'allProducts';
-            $scope.categoryClass = $scope.category.name.toLowerCase().replace(' ', '-') || '';
+            $scope.categoryClass = $scope.category.name || '';
 
+            if($scope.categoryClass !== '') {
+                $scope.categoryClass = $scope.categoryClass.toLowerCase().replace(' ', '-') || '';
+            }
 
             $scope.loadedPages = 1;
             $scope.loadMorePages = false;
