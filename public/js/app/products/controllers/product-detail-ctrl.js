@@ -28,7 +28,7 @@ angular.module('ds.products')
             // used by breadcrumb directive
             $scope.category = product.categories;
             $scope.breadcrumbData = angular.copy($scope.category);
-
+            $scope.formattedDescription = product.product.description.replace(/(\n)+/g, '<br />');
             $scope.taxConfiguration = GlobalData.getCurrentTaxConfiguration();
 
             if(!!lastCatId) {

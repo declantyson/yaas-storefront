@@ -1,4 +1,20 @@
 .productDetailsContainer{
+  max-width: 1600px;
+  margin: 0 auto;
+  .description {
+    margin: 30px 0;
+    text-align: left;
+    @media screen and (max-width: 740px) {
+      margin: 40px;
+    }
+  }
+  .pageTitle {
+    font-family: 'LemonMilk', 'Helvetica', sans-serif;
+    margin: 20px 0 50px 0;
+    @media screen and (max-width: 740px) {
+      margin: 40px;
+    }
+  }
   .product-details{
     padding-top: 30px;
 
@@ -10,9 +26,11 @@
     }
 
     .form-group{
-      width: 91px !important;
+      width: 272px;
       margin: 0 auto;
-
+      &.qty {
+        margin-top: 20px;
+      }
       .form-control{
         font-size: 13px;
         height: auto;
@@ -42,14 +60,8 @@
       margin: 0 0 20px 0;
     }
 
-
-    .quantity{
-      width: 40px;
-    }
-
-
     .buyButton{
-      margin: 22px 0 0 0;
+      margin: 0 0 10px 0;
       button{
         padding: 14px 89px;
       }
@@ -124,9 +136,6 @@
 
   }
 
-  @media  (min-width: @screen-md-max) {
-    padding-top: 65px;
-  }
 
   section.gray{
     padding: 46px 110px 100px 110px;

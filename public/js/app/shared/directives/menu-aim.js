@@ -39,4 +39,7 @@ $(document).on('click', 'body', function() {
     $('.dropdown-menu').hide();
 });
 
-
+$(document).on('click', '.secondaryCategory', function(){
+    $('.js-megamenutoggle').removeClass('mactive');
+    $(this).closest('.dropdown').find('.js-megamenutoggle').addClass('mactive');
+});
