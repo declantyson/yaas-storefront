@@ -279,13 +279,24 @@
 }
 
 a.signin{
+  text-transform: uppercase;
+  font-weight: bold;
+  display: block;
+  cursor:pointer;
   padding-left: 0;
-  padding-top: 4px;
+  padding-top: 10px;
   padding-right: 7px;
   color: @black;
   &:hover{
     text-decoration: none;
-    color: #0079ff;
+    color: @brand-primary;
+
+  }
+}
+
+.signinContainer-sidebar{
+  .my-account-link{
+    padding-top: 0;
 
   }
 }
@@ -293,16 +304,26 @@ a.signin{
 a.my-profile{
   height: 47px;
   display: inline-block;
+  cursor: pointer;
 
   &:hover{
     border-bottom: 3px solid #0079ff;
+    text-decoration: none;
   }
 }
 
 a.signout{
   color: @black;
   font-size: 11px;
+  :hover{
+    border-bottom: 3px solid #0079ff;
+    text-decoration: none;
+  }
 
+}
+
+a.siteSelectorIcon{
+  cursor:pointer;
 }
 
 .top-navigation{
@@ -342,7 +363,8 @@ a.signout{
     padding: 10px;
     display: inline-block;
     img{
-      height: 55px;
+      max-width: 100%;
+      padding-top: 10px;
     }
   }
 
@@ -430,13 +452,17 @@ a.signout{
 
   .googleSignIn{
     height: 43px;
-    background: #de5543 url('../../img/g+_signInLogo.png') top left no-repeat;
-    width: 50%;
+    background: url('../../img/g_signInLogo.png') left no-repeat;
+    background-size: 21.5px;
+    background-position: 10px 10.75px;
     position: relative;
     margin: 0 auto;
+    cursor: pointer;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+    transition: all 0.5s ease;
 
     .googleSignInLabel{
-      color: #f2f3f8;
+      color: #757575;
       position: absolute;
       z-index:200;
       left: 50px;
@@ -445,17 +471,18 @@ a.signout{
     }
   }
 
+  .googleSignIn:hover {
+    box-shadow: 0 2px 4px 0 #4285f4;
+  }
+
   .fbLogin{
+    height: 43px;
+    background: #006699 url('../../img/fb_signInLogo.png') top left no-repeat;
     cursor:pointer;
     position: relative;
     padding-left: 0 !important;
     margin: 0 auto;
-    width: 50%;
 
-    .fbLoginButton{
-      height: 43px;
-      background: #006699 url('../../img/fb_signInLogo.png') top left no-repeat;
-    }
     .fbsignInLabel{
       color: #f2f3f8;
       position: absolute;
@@ -467,9 +494,22 @@ a.signout{
 
   }
 
-  @media(max-width: @screen-xs-max) {
-    .fbLogin, .googleSignIn {
-      width: 100%;
+  @media(max-width: 535px) {
+    .fbLogin{
+      background: #006699 url('../../img/fb_signInLogo-mobile.png') top center no-repeat;
+      
+      .fbsignInLabel{
+        display: none
+      }
+    } 
+    .googleSignIn {
+      background: url('../../img/g_signInLogo-mobile.png') center no-repeat;
+      background-size: 21.5px;
+      background-position: center;
+      box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+      .googleSignInLabel{
+        display: none;
+      }
     }
 
     .signInTabs{
@@ -517,7 +557,7 @@ a.signout{
 
 
 .signInTabs{
-  width: 55%;
+  // width: 55%;
   font-size: 15px;
   margin: 0 auto 30px auto;
   text-transform: uppercase;
@@ -536,6 +576,11 @@ a.signout{
   &.nav-tabs > li > a:hover,
   &.nav-tabs > li > a:focus {
     // padding: 0 20px;
+  }
+
+  li{
+    float: none;
+    display: inline-block;
   }
 
   li.signInButton{
@@ -649,11 +694,22 @@ a.signout{
 
   }
 
+  .navbar-padding {
+     padding-top: 10px; 
+     padding-bottom: 10px; 
+  }
+  .navbar-padding-left {
+      padding-left: 58px;
+  }
+  .navbar-padding-right {
+      padding-right: 58px;
+  }
+
 
 }
 
 .yamm .dropdown.yamm-fw .dropdown-menu{
-  background-color: #d6dbde;
+  background-color: @gray-dark;
   margin-left: -45px;
   margin-right: -45px;
   margin-top: 9px;
@@ -662,19 +718,21 @@ a.signout{
   box-shadow: none;
 
   .secondaryCategory{
-    color: @black;
+    color: @white;
     font-size: 14px;
     font-weight: bold;
     &:hover{
-      color: @lightblue;
+      color: @brand-primary;
     }
 
   }
 }
 
 .cart{
-  margin-top: 7px;
-
+  display: block;
+  opacity: 1;
+  transition: opacity linear 0.5s, visibility 0s;
+  transition-delay: 0s;
 }
 
 .yamm.navbar-default{
@@ -695,25 +753,26 @@ a.signout{
     background-color: transparent;
     color: @black;
     font-weight: 500;
+    border-bottom: 2px solid transparent;
   }
 
   li.open{
     a.mainCategory.mactive,
     a.mainCategory:hover{
       background-color: transparent !important;
-      color: #0079ff;
+      
     }
   }
 
   li{
     a.mainCategory.mactive{
-      color: #0079ff;
+      color: @brand-primary;
 
     }
 
     a.mainCategory:hover{
       background-color: transparent !important;
-      color: #0079ff;
+      border-bottom: 2px solid @brand-primary;
     }
   }
 
@@ -722,10 +781,10 @@ a.signout{
     margin-top: 12px;
     padding-left: 0;
     a{
-      color: #7e8388;
+      color: lighten(@gray-base, 60%);
 
       &:hover{
-        color: #0079ff;
+        color: @brand-primary;
       }
     }
 
@@ -748,9 +807,14 @@ a.signout{
   display: block;
 }
 
-.checkout-btn-container{
+
+.checkout-btn-container, .site-selector-container{
   border-left: 1px solid #d4d5d5;
 
+}
+
+.mobileNav {
+    
 }
 
 .mobileNav .top-navigation{
@@ -770,7 +834,7 @@ a.signout{
   }
 
   .breadCrumbText{
-    font:13px @font-family-serif;
+    font:13px;
     color: #7d7e7f;
     margin: 0 0 15px 0;
   }
@@ -871,14 +935,24 @@ a.signout{
     font-size: 14px;
     text-transform: none;
     color: #000;
+    cursor: pointer;
+    &:hover{
+      text-decoration: none;
+    }
   }
 
 }
 
 .regionControlList{
   border-right: 1px solid #b3b8bb;
+  li{
+    cursor:pointer;
+  }
 }
 .languageMenu{
+    li{
+      cursor: pointer;
+    }
     li:hover{
         color:@darkestgrey;
     }
@@ -948,4 +1022,10 @@ a.signout{
           padding: 25px 0;
         }
     }
+}
+
+.socialAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
 }

@@ -21,12 +21,13 @@ module.exports = function(config){
         'public/js/vendor/restangular/dist/restangular.min.js',
         'public/js/vendor/angular-ui-router/release/angular-ui-router.min.js',
         'public/js/vendor/angular-translate/angular-translate.min.js',
+        'public/js/vendor/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
         'public/js/vendor/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
         'public/js/vendor/angular-stripe-js/build/angular-stripe-js.min.js',
         'public/js/vendor/angular-xeditable/dist/js/xeditable.js',
         'public/js/vendor/angular-sanitize/angular-sanitize.js',
         'public/js/vendor/angular-ui-select/dist/select.min.js',
-        'public/js/vendor/angular-directive.g-signin/google-plus-signin.js',
+        'public/js/vendor/angular-ui-notification/dist/angular-ui-notification.min.js',
         'public/js/vendor/algoliasearch/dist/algoliasearch.angular.js',
 
         // dummy config/bootstrap for testing
@@ -56,8 +57,6 @@ module.exports = function(config){
         'public/js/app/shared/controllers/top-navigation-ctrl.js',
         'public/js/app/shared/i18n/i18-index.js',
         'public/js/app/shared/i18n/i18-constants.js',
-        'public/js/app/shared/i18n/lang/en.js',
-        'public/js/app/shared/i18n/lang/de.js',
         'public/js/app/shared/i18n/providers/translation-provider.js',
 
         'public/js/app/shared/directives/y-breadcrumb.js',
@@ -65,6 +64,9 @@ module.exports = function(config){
         'public/js/app/shared/directives/y-search.js',
         'public/js/app/shared/directives/y-inputs-dir.js',
         'public/js/app/shared/directives/force-scroll.js',
+
+        'public/js/app/shared/media/main-media-extractor.js',
+        'public/js/app/shared/media/committed-media-filter.js',
 
         'public/js/app/home/home-index.js',
         'public/js/app/home/controllers/home-ctrl.js',
@@ -84,9 +86,11 @@ module.exports = function(config){
 
         'public/js/app/cart/cart-index.js',
         'public/js/app/cart/controllers/cart-ctrl.js',
+        'public/js/app/cart/controllers/cart-note-mixin-ctrl.js',
         'public/js/app/cart/directives/cart-auto-toggle.js',
         'public/js/app/cart/services/cart-service.js',
         'public/js/app/cart/services/cart-rest.js',
+        'public/js/app/cart/services/cart-note-mixin-service.js',
 
         'public/js/app/checkout/checkout-index.js',
         'public/js/app/checkout/controllers/checkout-ctrl.js',
@@ -141,6 +145,7 @@ module.exports = function(config){
         'public/js/app/auth/services/anon-auth-service.js',
         'public/js/app/auth/services/auth-dialog-manager.js',
         'public/js/app/auth/services/session-service.js',
+        'public/js/app/auth/services/google-provider.js',
 
         'public/js/app/shared/router.js',
         'public/js/app/shared/http-proxy.js',
@@ -177,7 +182,6 @@ module.exports = function(config){
     ],
 
     exclude : [
-
     ],
 
     preprocessors : {

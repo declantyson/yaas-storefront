@@ -35,29 +35,47 @@ angular.module('ds.coupon')
             $scope.$on('$destroy', unbindSignIn);
 
             /** get coupon and apply it to the cart */
-            $scope.applyCoupon = function(couponCode) {
-                $scope.coupon = CouponSvc.getCoupon(couponCode).then(function (couponGetResponse) {
-                    if (couponGetResponse.discountAbsolute && couponGetResponse.discountAbsolute.currency !== $scope.cart.currency) {
-                        getCouponError({status: 'CURR'});
-                    }
-                    else {
-                        CartSvc.redeemCoupon(couponGetResponse, $scope.cart.id).then(function () {
-                            //success
-                        }, function (couponRedeemError) {
-                            //error
-                            redeemCouponError(couponRedeemError);
-                        });
-                    }
-                }, function (couponGetError) {
-                    getCouponError(couponGetError);
+            $scope.applyCoupon = function(code) {
+                if( isValidCouponCode(code) ) {
+                    $scope.removeErrorBlock();
+                    $scope.coupon = CouponSvc.getCoupon(code).then(function (couponGetResponse) {
+                        if (couponGetResponse.discountAbsolute && couponGetResponse.discountAbsolute.currency !== $scope.cart.currency) {
+                            getCouponError({status: 'CURR'});
+                        }
+                        else {
+                            CartSvc.redeemCoupon(couponGetResponse, $scope.cart.id).then(function () {
+                                //success
+                            }, function (couponRedeemError) {
+                                //error
+                                redeemCouponError(couponRedeemError);
+                            });
+                        }
+                    }, function (couponGetError) {
+                        getCouponError(couponGetError);
+                    });
+                }
+            };
+
+            $scope.removeCoupon = function(couponId) {
+                CartSvc.removeCoupon($scope.cart.id, couponId).then(function () {
+                    $scope.removeErrorBlock();
                 });
             };
 
             $scope.removeAllCoupons = function() {
                 CartSvc.removeAllCoupons($scope.cart.id).then(function () {
-                    $scope.coupon.error = '';
-                    $scope.couponErrorMessage = '';
+                    $scope.removeErrorBlock();
                 });
+            };
+
+            $scope.removeErrorBlock = function () {
+                if($scope.coupon && $scope.coupon.error) {
+                    $scope.coupon.error = '';
+                }
+
+                if($scope.couponErrorMessage) {
+                    $scope.couponErrorMessage = '';
+                }
             };
 
             var getCouponError = function(couponError) {
@@ -85,10 +103,16 @@ angular.module('ds.coupon')
             };
 
             var redeemCouponError = function (couponError) {
-                $scope.coupon.error = couponError;
-                if (couponError.status === 400) {
-                    $scope.couponErrorMessage = couponError.data.details[0].message;
-                }
+                     var errorMessages = CouponSvc.redeemCouponError(couponError);
+                     // Just display the first coupon error message
+                     $scope.couponErrorMessage = errorMessages[0];
             };
 
+            var isValidCouponCode = function (code) {
+                if ( code.indexOf(' ') > -1) {
+                    $scope.couponErrorMessage = $translate.instant('COUPON_NOT_VALID');
+                    return false;
+                }
+                return true;
+            };
         }]);

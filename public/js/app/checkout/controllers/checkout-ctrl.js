@@ -33,8 +33,8 @@ angular.module('ds.checkout')
      * is re-enabled so that the user can make changes and resubmit if needed.
      *
      * */
-    .controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$anchorScroll', 'CheckoutSvc', 'cart', 'order', '$state', '$modal', 'AuthSvc', 'AccountSvc', 'AuthDialogManager', 'shippingZones', 'GlobalData', 'ShippingSvc', 'shippingCountries', '$q', 'CartSvc',
-        function ($rootScope, $scope, $location, $anchorScroll, CheckoutSvc, cart, order, $state, $modal, AuthSvc, AccountSvc, AuthDialogManager, shippingZones, GlobalData, ShippingSvc, shippingCountries, $q, CartSvc) {
+    .controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$anchorScroll', 'CheckoutSvc','cart', 'order', '$state', '$modal', 'AuthSvc', 'AccountSvc', 'AuthDialogManager', 'GlobalData', 'ShippingSvc', 'shippingZones', 'shippingCountries', '$q', 'CartSvc', '$timeout',
+            function ($rootScope, $scope, $location, $anchorScroll, CheckoutSvc, cart, order, $state, $modal, AuthSvc, AccountSvc, AuthDialogManager, GlobalData, ShippingSvc, shippingZones, shippingCountries, $q, CartSvc, $timeout) {
 
             $scope.order = order;
             $scope.displayCart = false;
@@ -44,9 +44,7 @@ angular.module('ds.checkout')
             //Then in the configuration service the   CartSvc.refreshCartAfterLogin(account.id); is called, and
             //this method changes cart. That is the reason cart was empty on refresh
             //With this implementation we are getting the cart object from service after it is loaded
-            cart = $scope.cart;
-            $scope.shippingCountries = shippingCountries;
-            $scope.shippingZones = shippingZones || 0;
+            $scope.shippingZones = shippingZones || [];
             $scope.currencySymbol = GlobalData.getCurrencySymbol(cart.currency);
             $scope.user = GlobalData.user;
             $scope.addresses = [];
@@ -62,7 +60,7 @@ angular.module('ds.checkout')
                 for (var year = new Date().getFullYear(), i = year, stop = year + 10; i < stop; i++) {
                     this.years.push(i);
                 }
-                this.months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+                this.months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
 
             };
 
@@ -80,6 +78,7 @@ angular.module('ds.checkout')
             var unbind = $rootScope.$on('cart:updated', function (eve, eveObj) {
                 $scope.cart = eveObj.cart;
                 $scope.currencySymbol = GlobalData.getCurrencySymbol($scope.cart.currency);
+                updateShippingCost($scope.order.shipTo);
             });
 
             $scope.$on('$destroy', unbind);
@@ -91,28 +90,28 @@ angular.module('ds.checkout')
                 });
             };
 
-            var populateBillTo = function (address) {
-                $scope.order.billTo.id = address.id;
-                $scope.order.billTo.contactName = address.contactName;
-                $scope.order.billTo.companyName = address.companyName;
-                $scope.order.billTo.address1 = address.street;
-                $scope.order.billTo.address2 = address.streetAppendix;
+            var populateBillTo = function(address){
+                $scope.order.shipTo.id = address.id;
+                $scope.order.shipTo.contactName = address.contactName;
+                $scope.order.shipTo.companyName = address.companyName;
+                $scope.order.shipTo.address1 = address.street;
+                $scope.order.shipTo.address2 = address.streetAppendix;
 
                 //checkout requires 2 character country codes
                 if (address.country === 'USA') {
                     address.country = 'US';
                 }
-                $scope.order.billTo.country = address.country;
-                $scope.order.billTo.city = address.city;
-                $scope.order.billTo.state = address.state;
-                $scope.order.billTo.zipCode = address.zipCode;
-                $scope.order.billTo.contactPhone = address.contactPhone;
+                $scope.order.shipTo.country = address.country;
+                $scope.order.shipTo.city = address.city;
+                $scope.order.shipTo.state = address.state;
+                $scope.order.shipTo.zipCode = address.zipCode;
+                $scope.order.shipTo.contactPhone = address.contactPhone;
 
-                $scope.$emit('localizedAddress:updated', address.country, 'billing');
+                $scope.$emit('localizedAddress:updated', address.country, 'shipping');
             };
 
-            var getAddresses = function () {
-                if (AuthSvc.isAuthenticated()) {
+            var getAddresses = function() {
+                if(AuthSvc.isAuthenticated()) {
                     AccountSvc.getAddresses().then(function (response) {
                         if (response.length) {
                             shouldAutoUpdateName = false;
@@ -120,7 +119,7 @@ angular.module('ds.checkout')
                             $scope.addresses = response;
                             selectedBillingAddress = defaultAddress;
                             selectedShippingAddress = defaultAddress;
-                            if ($scope.isShipToCountry(defaultAddress.country)) {
+                            if ($scope.isShipToCountry(defaultAddress.country) || !$scope.shippingZones.length) {
                                 populateBillTo(defaultAddress);
                             }
                             updateShippingCost(defaultAddress);
@@ -146,8 +145,8 @@ angular.module('ds.checkout')
                 }
             };
 
-            var getAccount = function () {
-                AccountSvc.account().then(function (account) {
+            var getAccount = function() {
+                AccountSvc.account().then(function(account) {
                     $scope.order.account.email = account.contactEmail;
                     $scope.order.account.title = account.title;
                     $scope.order.account.firstName = account.firstName;
@@ -156,7 +155,7 @@ angular.module('ds.checkout')
                 });
             };
 
-            $scope.$on('user:signedin', function () {
+            $scope.$on('user:signedin', function() {
                 getAccount();
                 getAddresses();
             });
@@ -177,22 +176,24 @@ angular.module('ds.checkout')
 
             $scope.submitIsDisabled = false;
 
+            $scope.shippingConfigured = ShippingSvc.isShippingConfigured($scope.shippingZones);
+
             // Configure modal "spinner" to block input during checkout processing
             var ssClass = 'order-processing-dialog',
                 modal = {
                     instance: null,
                     spinner: null,
-                    open: function (configuration) {
+                    open: function(configuration) {
                         var self = this;
                         this.spinner = this.spinner || new Spinner(configuration).spin();
                         this.instance = $modal.open(configuration);
-                        this.instance.opened.then(function () {
-                            setTimeout(function () {
+                        this.instance.opened.then(function() {
+                            setTimeout(function() {
                                 $('.' + ssClass + ' .spinner').append(self.spinner.el);
                             }, 10);
                         });
                     },
-                    close: function () {
+                    close: function() {
                         this.spinner.stop();
                         this.instance.dismiss('cancel');
                     }
@@ -260,37 +261,28 @@ angular.module('ds.checkout')
             };
 
             /** Copy bill-to information to the ship-to properties.*/
-            var setShipToSameAsBillTo = function (updateCost) {
-                if (updateCost) {
-                    if (!$scope.order.billTo.zipCode) {
-                        $scope.order.billTo.zipCode = '';
-                    }
-                    updateShippingCost($scope.order.billTo);
-                }
-                angular.copy($scope.order.billTo, $scope.order.shipTo);
-                selectedShippingAddress = $scope.order.shipTo;
-                $scope.$emit('localizedAddress:updated', selectedShippingAddress.country, 'shipping');
+            var setBillToSameAsShipTo = function () {
+                angular.copy($scope.order.shipTo, $scope.order.billTo);
+                selectedBillingAddress = $scope.order.billTo;
+                $scope.$emit('localizedAddress:updated', selectedBillingAddress.country, 'billing');
             };
 
-            var clearShipTo = function () {
-                selectedShippingAddress = {};
-                $scope.order.shipTo = {};
-                if ($scope.order.billTo.country) {
-                    $scope.order.shipTo.country = $scope.order.billTo.country;
+            var clearBillTo = function(){
+                selectedBillingAddress = {};
+                $scope.order.billTo = {};
+                if ($scope.order.shipTo.country) {
+                    $scope.order.billTo.country = $scope.order.shipTo.country;
                 }
-                //$scope.order.shipTo.zipCode = '';
-                selectedShippingAddress = $scope.order.shipTo;
-                $scope.$emit('localizedAddress:updated', selectedShippingAddress.country, 'shipping');
+                selectedBillingAddress = $scope.order.billTo;
+                $scope.$emit('localizedAddress:updated', selectedBillingAddress.country, 'billing');
                 $scope.shipToSameAsBillTo = false;
             };
 
-            $scope.toggleShipToSameAsBillTo = function () {
-                if ($scope.shipToSameAsBillTo) {
-                    setShipToSameAsBillTo(true);
-                    $rootScope.shipActive = false;
+            $scope.toggleBillToSameAsShipTo = function(){
+                if($scope.shipToSameAsBillTo){
+                    setBillToSameAsShipTo();
                 } else {
-                    clearShipTo();
-                    $rootScope.shipActive = true;
+                    clearBillTo();
                 }
                 $rootScope.closeCartOnCheckout();
             };
@@ -369,7 +361,7 @@ angular.module('ds.checkout')
 
             /** Show error message after failed checkout, re-enable the submit button and reset any wait cursor/splash screen.
              * @param error message*/
-            function onCheckoutFailure(error) {
+            function onCheckoutFailure (error) {
 
                 $scope.message = error;
                 $scope.submitIsDisabled = false;
@@ -420,17 +412,16 @@ angular.module('ds.checkout')
                 $scope.message = null;
                 $scope.$broadcast('submitting:form', form);
                 if (formValid) {
-
                     modal.open({
                         templateUrl: 'js/app/checkout/templates/order-processing-splash-screen.html',
                         windowClass: ssClass,
                         top: '60%'
                     });
+
                     $scope.submitIsDisabled = true;
                     if ($scope.shipToSameAsBillTo) {
-                        setShipToSameAsBillTo(false);
+                        setBillToSameAsShipTo();
                     }
-
                     $scope.order.cart = $scope.cart;
                     $scope.order.shipping = angular.fromJson($scope.shippingCost);
 
@@ -454,8 +445,7 @@ angular.module('ds.checkout')
                             $scope.message = 'PLEASE_CORRECT_ERRORS';
                         }
                     });
-                }
-                else {
+                } else {
                     $scope.showPristineErrors = true;
                     $scope.message = 'PLEASE_CORRECT_ERRORS';
                     // Important debug for dynamic form validation.
@@ -464,7 +454,7 @@ angular.module('ds.checkout')
                 }
             };
 
-            $scope.selectAddress = function (address, target) {
+            $scope.selectAddress = function(address, target) {
                 $scope.displayCart = false;
                 if (target === $scope.order.billTo) {
                     selectedBillingAddress = address;
@@ -472,8 +462,8 @@ angular.module('ds.checkout')
                 }
                 else if (target === $scope.order.shipTo) {
                     selectedShippingAddress = address;
-                    $rootScope.shipActive = true;
                     $scope.$emit('localizedAddress:updated', address.country, 'shipping');
+                    updateShippingCost(selectedShippingAddress);
                 }
                 addressModalInstance.close();
 
@@ -487,26 +477,27 @@ angular.module('ds.checkout')
                 target.state = address.state;
                 target.zipCode = address.zipCode;
                 target.contactPhone = address.contactPhone;
-                if (target === $scope.order.billTo && ($scope.shipToSameAsBillTo === true || _.isEmpty($scope.order.shipTo))) {
-                    setShipToSameAsBillTo(true);
+                if(target === $scope.order.shipTo && ($scope.shipToSameAsBillTo === true || _.isEmpty($scope.order.billTo))){
+                    setBillToSameAsShipTo();
                 }
-                $scope.shipToSameAsBillTo = _.isEqual($scope.order.billTo, $scope.order.shipTo);
-                var addressToShip = $rootScope.shipActive ? $scope.order.shipTo : $scope.order.billTo;
-                updateShippingCost(addressToShip);
+                $scope.shipToSameAsBillTo = _.isEqual($scope.order.shipTo, $scope.order.billTo);
             };
 
-            $scope.openAddressDialog = function (target) {
+            $scope.openAddressDialog = function(target, addType) {
                 addressModalInstance = $modal.open({
                     templateUrl: './js/app/account/templates/addresses-dialog.html',
                     windowClass: 'addressBookModal',
                     scope: $scope,
                     resolve: {
-                        addresses: ['AccountSvc', function (AccountSvc) {
-                            return AccountSvc.getAddresses().then(function () {
+                        addresses: ['AccountSvc', function(AccountSvc) {
+                            return AccountSvc.getAddresses().then(function() {
                                 $scope.isDialog = true;
                                 $scope.showAddressDefault = 6;
                                 $scope.showAddressFilter = $scope.showAddressDefault;
+                                $scope.showAllAddressButton = $scope.showAddressDefault < $scope.addresses.length;
+                                $scope.showAllAddresses = false;
                                 $scope.target = target;
+                                $scope.addType = addType;
                             });
                         }]
                     }
@@ -517,8 +508,17 @@ angular.module('ds.checkout')
                 addressModalInstance.close();
             };
 
-            $scope.$on('goToStep2', function () {
-                if ($scope.wiz.step1Done && $scope.wiz.step2Done) {
+            $scope.toggleAddresses = function () {
+                if ($scope.showAddressFilter === $scope.addresses.length) {
+                    $scope.showAddressFilter = $scope.showAddressDefault;
+                } else {
+                    $scope.showAddressFilter = $scope.addresses.length;
+                }
+                $scope.showAllAddresses = $scope.showAddressFilter === $scope.addresses.length;
+            };
+
+            $scope.$on('goToStep2', function(){
+                if( $scope.wiz.step1Done &&  $scope.wiz.step2Done){
                     $scope.wiz.step2Done = false;
                     $scope.wiz.step3Done = false;
                     $location.hash('step2');
@@ -527,7 +527,7 @@ angular.module('ds.checkout')
             });
 
             $scope.updateAddressName = function () {
-                $scope.$broadcast('myDetails:change', $scope.billToForm);
+                $scope.$broadcast('myDetails:change', $scope.shipToForm);
                 if (shouldAutoUpdateName) {
                     var fullName = '';
                     if ($scope.order.account.firstName) {
@@ -540,7 +540,15 @@ angular.module('ds.checkout')
                         fullName = fullName + $scope.order.account.lastName;
                     }
 
-                    $scope.order.billTo.contactName = fullName;
+                    $scope.order.shipTo.contactName = fullName;
+                }
+            };
+
+            $scope.disableAddress = function (country) {
+                if (!$scope.isShipToCountry(country) && $scope.shippingZones.length && $scope.isDialog && $scope.addType !== 'billing') {
+                    return true;
+                } else {
+                    return false;
                 }
             };
 
@@ -549,9 +557,12 @@ angular.module('ds.checkout')
             };
 
             $scope.ifShipAddressApplicable = function (address, target) {
-                var condition = $scope.isShipToCountry(address.country);
-                if (condition) {
-                    return $scope.selectAddress(address, target);
+                if ($scope.shippingZones.length && $scope.addType !== 'billing') {
+                    if ($scope.isShipToCountry(address.country)) {
+                        $scope.selectAddress(address, target);
+                    }
+                } else {
+                    $scope.selectAddress(address, target);
                 }
             };
 
@@ -559,35 +570,55 @@ angular.module('ds.checkout')
                 $scope.displayCart = false;
             };
 
-            $rootScope.$on('preview:order', function (eve, eveObj) {
-                $scope.previewOrder(eveObj.shipToDone, eveObj.billToDone);
+            var unbindPreviewOrder = $rootScope.$on('preview:order', function (eve, eveObj) {
+                previewOrder(eveObj.shipToDone, eveObj.billToDone);
             });
 
             $scope.$on('site:updated', function () {
                 $scope.cart = CartSvc.getCart();
             });
 
-            $scope.previewOrder = function (shipToFormValid, billToFormValid) {
-                $scope.messagePreviewOrder = null;
-                if (shipToFormValid && billToFormValid && $scope.shippingCosts) {
-                    var shippingCostObject = angular.fromJson($scope.shippingCost);
-                    var addressToShip = $rootScope.shipActive ? $scope.order.shipTo : $scope.order.billTo;
-                    $scope.cart.shipping.fee.amount = shippingCostObject.fee.amount;
-                    CartSvc.recalculateCart($scope.cart, addressToShip, shippingCostObject).then(
-                        function (calculatedCart) {
-                            $scope.cart.subTotalPrice.amount = calculatedCart.subTotalPrice.amount;
-                            $scope.cart.totalPrice.amount = calculatedCart.totalPrice.amount;
-                            if (calculatedCart.totalTax) {
-                                $scope.cart.totalTax.amount = calculatedCart.totalTax.amount;
-                            }
-                            else {
-                                $scope.cart.totalTax = {amount: 0};
-                            }
-                            $scope.cart.taxAggregate = angular.copy(calculatedCart.taxAggregate);
+            $rootScope.$on('language:updated', function () {
+                updateShippingCost($scope.order.shipTo);
+            });
 
+            $scope.$on('$destroy', unbindPreviewOrder);
+
+            $scope.scrollTo = function (id, yOffset) {
+                $anchorScroll.yOffset = yOffset;
+                var old = $location.hash();
+                $location.hash(id);
+                $anchorScroll();
+                $location.hash(old);
+            };
+
+            $scope.previewOrderDesktop = function (shipToValid, billToValid) {
+                previewOrder(shipToValid, billToValid).then(function () {
+                    $timeout(function () {
+                        $scope.scrollTo('preview-order', 20);
+                    }, 1);
+                });
+            };
+
+            function previewOrder (shipToFormValid, billToFormValid) {
+                var deferred = $q.defer();
+                $scope.messagePreviewOrder = null;
+                if (shipToFormValid && billToFormValid) {
+                    var shippingCostObject = angular.fromJson($scope.shippingCost);
+                    CartSvc.recalculateCart($scope.cart, $scope.order.shipTo, shippingCostObject).then(
+                        function (calculatedCart) {
+                            $scope.cart.currency = calculatedCart.currency;
+                            $scope.cart.totalTax = calculatedCart.totalTax;
+                            $scope.cart.taxAggregate = calculatedCart.taxAggregate;
+                            $scope.cart.subTotalPrice = calculatedCart.subTotalPrice;
+                            $scope.cart.totalPrice = calculatedCart.totalPrice;
+                            $scope.cart.totalUnitsCount = calculatedCart.totalUnitsCount;
+                            $scope.cart.shipping = calculatedCart.shipping;
+                            $scope.cart.totalDiscount = calculatedCart.totalDiscount;
                             $rootScope.$emit('order:previewed');
                             $scope.displayCart = true;
                             $scope.showPristineErrors = false;
+                            deferred.resolve();
                         },
                         function (error) {
                             if (error.status === 400 && error.data.details && error.data.details[0].field === 'addresses') {
@@ -597,15 +628,18 @@ angular.module('ds.checkout')
                                 $scope.messagePreviewOrder = 'PLEASE_CORRECT_MESSAGE_ERRORS';
                                 $scope.showPristineErrors = true;
                             }
+                            deferred.reject();
                         }
                     );
                 } else {
                     $scope.showPristineErrors = true;
                     $scope.messagePreviewOrder = 'PLEASE_CORRECT_ERRORS_PREVIEW';
+                    deferred.reject();
                 }
-            };
+                return deferred.promise;
+            }
 
-            $rootScope.$on('updateShippingCost', function (eve, eveObj) {
+            $scope.$on('event:shipping-cost-updated', function (eve, eveObj) {
                 updateShippingCost(eveObj.shipToAddress);
             });
 
@@ -667,13 +701,21 @@ angular.module('ds.checkout')
                 if (worldpayData['language-code']) {
                     data.shopperLanguageCode = worldpayData['language-code'];
                 }
+                /* jshint ignore:start */
                 Worldpay.helpers.ajax.post(Worldpay.api_path + 'tokens', callback, Worldpay.helpers.JSON.stringify(data));
+                /* jshint ignore:end */
             };
 
             var updateShippingCost = function (shipToAddress) {
-                var address = shipToAddress;
-                var cart = $scope.cart;
-                if ($scope.isShipToCountry(shipToAddress.country)) {
+
+                if ($scope.isShipToCountry(shipToAddress.country) && $scope.shippingConfigured) {
+
+                    if (!shipToAddress.zipCode) {
+                        shipToAddress.zipCode = '';
+                    }
+
+                    var address = shipToAddress;
+                    var cart = $scope.cart;
 
                     var data = {
                         'cartTotal': {
@@ -685,7 +727,7 @@ angular.module('ds.checkout')
 
                     var costsPromise = ShippingSvc.getShippingCosts(data).then(
                         function (result) {
-                            return result[0];
+                            return result;
                         }
                     );
 
@@ -695,27 +737,26 @@ angular.module('ds.checkout')
                         }
                     );
 
-                    $q.all([costsPromise, minCostPromise]).then(function (data) {
-                        $scope.shippingCosts = data[0].methods;
-                        var shippingCost = data[1];
-                        if ($scope.isShipToCountry(shipToAddress.country)) {
-                            for (var i = 0; i < $scope.shippingCosts.length; i++) {
-                                $scope.shippingCosts[i].zoneId = data[0].zone.id;
-                                if ($scope.shippingCosts[i].fee.amount === shippingCost.fee.amount) {
-                                    shippingCost.zoneId = $scope.shippingCosts[i].zoneId;
-                                    shippingCost.id = $scope.shippingCosts[i].id;
-                                    shippingCost.name = $scope.shippingCosts[i].name;
-                                    $scope.shippingCosts[i].preselect = true;
+                    $q.all([costsPromise, minCostPromise]).then(function(data){
+                        var shippingCosts = data[0];
+                        $scope.shippingCosts = [];
+                        $scope.shippingCost = data[1];
+                        $scope.currencySymbol = GlobalData.getCurrencySymbol();
+                        for(var j = 0; j < shippingCosts.length; j++){
+                            for (var i = 0; i < shippingCosts[j].methods.length; i++) {
+                                var shippingCostObject = {};
+                                angular.copy(shippingCosts[j].methods[i], shippingCostObject);
+                                shippingCostObject.zoneId = shippingCosts[j].zone.id;
+                                $scope.shippingCosts.push(shippingCostObject);
+                                if (shippingCosts[j].methods[i].fee.amount === $scope.shippingCost.fee.amount) {
+                                    $scope.shippingCost.zoneId = shippingCosts[j].zone.id;
+                                    $scope.shippingCost.id = shippingCosts[j].methods[i].id;
+                                    $scope.shippingCost.name = shippingCosts[j].methods[i].name;
                                 }
                             }
-                        } else {
-                            $scope.shippingCosts = [];
                         }
-
-                        $scope.shippingCost = shippingCost;
                     });
                 }
             };
 
-        }])
-;
+        }]);
