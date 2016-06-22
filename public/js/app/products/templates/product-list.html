@@ -8,7 +8,7 @@
     <ybreadcrumb yitem="category" size="large"></ybreadcrumb>
     <div class="category-results {{categoryClass}}">
         <div class="refine-section">
-            <div class="category-header">
+            <div class="category-header" ng-style="{ 'background-image' : 'url(\'{{category.media[0].url }}\')' }">
                 <div class="col-xs-12 text-center text-vertical-center">
                     <h1 class="pageTitle"><span ng-if="category.name">{{ category.name }}</span><span ng-if="!category.name">{{ 'ALL_PRODUCTS' | translate }}</span></h1>
                 </div>
