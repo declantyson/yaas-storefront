@@ -1,4 +1,6 @@
 .checkout{
+    max-width: 1200px;
+    margin: 0 auto;
 
 	.section{
 		margin: 0;
@@ -10,12 +12,13 @@
 	}
 
 	h1{
-
+        text-align: center;
+        font-family: 'LemonMilk';
 		color: @darkestgrey;
 		text-transform: uppercase;
-		font-weight: bold;
-        font-size: 49px;
-
+        font-size: 4.5rem;
+        line-height: 6rem;
+        margin-bottom: 40px;
 		small{
 			color: @defaultblue;
 			font-size: 14px;
@@ -31,6 +34,7 @@
         font-weight: bold;
 
 		.glyphicon-pencil{
+            cursor: pointer;
 			.hidden-lg;
 			.hidden-md;
 			float: right;
@@ -38,7 +42,6 @@
 	}
 	.steps{
         padding: 30px;
-        background-color: #fafafa;
 
         .input-group-addon{
             min-width: 100px;
@@ -47,12 +50,17 @@
 
         .step{
             .clearfix;
-            margin: 15px 0;
+            padding: 0 20px;
+            > a:hover {
+                text-decoration: none;
+            }
             label{
                 text-transform: uppercase;
+                font-weight: 700;
             }
             input{
-                font-weight: bold;
+                font-weight: 400;
+                color: @darkestgrey;
             }
 
             select{
@@ -227,6 +235,11 @@
             border: none;
         }
     }
+    #place-order-btn, #preview-order-btn {
+        max-width: 540px;
+        margin: 0 auto 40px auto;
+        padding: 16px;
+    }
 }
 
 #place-order-btn{
@@ -301,5 +314,10 @@
   .btn{
     width: 100%;
   }
+
+}
+
+#preview-order {
+    margin: 3rem 0;
 
 }
