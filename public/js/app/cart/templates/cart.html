@@ -9,33 +9,11 @@
   ~ Information and shall use it only in accordance with the terms of the
   ~ license agreement you entered into with hybris.
   -->
-<div cart-auto-toggle class="cartContainer" ng-mouseenter="cartHover()" ng-mouseleave="cartUnHover()">
-
-    <!-- shop or checkout -->
-    <div class="btn-group btn-group-justified">
-
-        <!-- continue shopping button -->
-        <div class="btn-group continue">
-            <button id="continue-shopping" ng-click="toggleCart()" class="btn  btn-default continue">
-                <span class="hyicon hyicon-chevron-thin-left"></span>
-                <span class="hidden-xs">{{'CONTINUE_SHOPPING' | translate}}</span>
-                <span class="hidden-sm hidden-md hidden-lg">{{'SHOP' | translate}}</span>
-            </button>
-        </div>
-
-        <!-- checkout button -->
-        <div class="btn-group checkout">
-            <button ng-if="cart.items.length" ng-click="toCheckoutDetails()" class="btn  btn-primary ">{{'CHECKOUT' | translate}} <span class="hyicon hyicon-chevron-thin-right"></span>
-            </button>
-            <button ng-if="!cart.items.length" ng-class="{ disabled: !cart.items.length }" class="btn">{{'CHECKOUT' | translate}}
-            </button>
-        </div>
-
-    </div>
+<div cart-auto-toggle cart-scroll-with-sticky-total class="cartContainer" ng-mouseenter="cartHover()" ng-mouseleave="cartUnHover()">
 
     <!-- empty cart message -->
     <div ng-if="!cart.error && !cart.items.length" class="empty-cart-text text-center">
-        {{'CART_EMPTY' | translate}}
+        <p>{{'CART_EMPTY' | translate}}</p>
     </div>
 
     <!-- cart unavialable message  -->
@@ -45,17 +23,7 @@
 
     <div ng-if="cart.items.length">
 
-        <section class="summary">
-
-            <!-- cart cost -->
-            <div ng-include="'./js/app/cart/templates/cart-costs.html'"></div>
-
-            <!-- Apply Coupon -->
-            <div ng-include="'./js/app/coupons/templates/coupon-apply.html'" ng-controller="CouponCtrl" class="couponWrapper"></div>
-
-        </section>
-
-        <section>
+        <section class="cart-items">
 
             <!-- Cart Item -->
             <div 
@@ -70,12 +38,12 @@
                 <div class="cart-item row">
 
                     <!-- product img -->
-                    <div class="col-xs-3 col-md-4 text-center img-col">
+                    <div class="col-xs-3 col-md-2 text-center img-col">
                         <img ng-src="{{ item && item.product.images[0].url || ''}}" class="img-responsive" />
                     </div>
 
 
-                    <div class="col-xs-8 col-md-8  detail-col">
+                    <div class="col-xs-9 col-md-10  detail-col">
                         <div class="row">
                             <div class="col-xs-10">
 
@@ -84,28 +52,25 @@
 
                                 <!-- product price -->
                                 <div class="price item-attr">
-                                    {{'ITEM_PRICE' | translate}}: <span> {{item.price.effectiveAmount | currency: currencySymbol}}</span>
-                                </div>
-
-                                <!-- product quantity -->
-                                <div class="clearfix">
+                                    <span> {{item.price.effectiveAmount | currency: currencySymbol}} x</span>
+                                    <!-- product quantity -->
                                     <div class="input-group pull-left" ng-class="{error: item.error}">
-                                        <label class="input-group-addon" for="qtyCart">{{'QTY' | translate}}:</label>
+                                        <!--<label class="input-group-addon" for="qtyCart">{{'QTY' | translate}}:</label>-->
                                         <form ng-submit="updateCartItemQty(item, item.quantity,{opencartAfterEdit: false})">
                                             <input quantity-input type="number" min="0" step="1" pattern="\d*" class="form-control" id="qtyCart" ng-model="item.quantity"
-                                            ng-blur="updateCartItemQty(item, item.quantity,{opencartAfterEdit: false})" />
+                                                   ng-blur="updateCartItemQty(item, item.quantity,{opencartAfterEdit: false})" />
                                         </form>
                                     </div>
                                 </div>
 
                                 <!-- total price -->
-                                <div class="price-total item-attr">{{'TOTAL_PRICE' | translate}}: <span>{{ item.itemPrice.amount || 0 | currency: currencySymbol}}</span></div>
-                                
+                                <div class="price-total item-attr clearfix">{{'TOTAL_PRICE' | translate}}: <span>{{ item.itemPrice.amount || 0 | currency: currencySymbol}}</span></div>
+
                                 <!-- note display -->
                                 <div id="noteMixin_area" class="noteMixin"> 
                                     
                                     <!-- display the note -->
-                                    <div class="note-display">
+                                    <div class="note-display" ng-if="item.mixins.note.comment">
                                         {{item.mixins.note.comment}}
                                     </div>
                                     
@@ -124,7 +89,7 @@
 
                             <!-- delete button -->
                             <div class="col-xs-2 text-right">
-                                <button id="remove-product" ng-click="removeProductFromCart(item.id)" class="btn btn-link removeCartItem"><span class="hyicon hyicon-remove"></span></button>
+                                <button id="remove-product" ng-click="removeProductFromCart(item.id)" class="btn btn-link removeCartItem"><i class="glyphicon glyphicon-trash"></i></button>
                             </div>
                             
                         </div>
@@ -157,5 +122,33 @@
         </section>
     </div>
     <!-- /Cart Item -->
+    <div class="sticky" ng-if="cart.items.length">
+        <section class="summary">
+            <!-- cart cost -->
+            <div ng-include="'./js/app/cart/templates/cart-costs.html'"></div>
+        </section>
+
+        <!-- shop or checkout -->
+        <div class="btn-group btn-group-justified">
+
+            <!-- continue shopping button -->
+            <div class="btn-group continue">
+                <button id="continue-shopping" ng-click="toggleCart()" class="btn  btn-default continue">
+                    <span class="hyicon hyicon-chevron-thin-left"></span>
+                    <span class="hidden-xs">{{'CONTINUE_SHOPPING' | translate}}</span>
+                    <span class="hidden-sm hidden-md hidden-lg">{{'SHOP' | translate}}</span>
+                </button>
+            </div>
+
+            <!-- checkout button -->
+            <div class="btn-group checkout">
+                <button ng-if="cart.items.length" ng-click="toCheckoutDetails()" class="btn  btn-primary ">{{'CHECKOUT' | translate}} <span class="hyicon hyicon-chevron-thin-right"></span>
+                </button>
+                <button ng-if="!cart.items.length" ng-class="{ disabled: !cart.items.length }" class="btn">{{'CHECKOUT' | translate}}
+                </button>
+            </div>
+
+        </div>
+    </div>
 </div>
 

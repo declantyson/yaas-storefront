@@ -1,11 +1,4 @@
 <table class="table">
-    <thead>
-        <!-- cart header -->
-        <tr class="cart-header">
-            <th>{{'EST_ORDER_TOTAL' | translate}}</th>
-            <th class="text-right">{{cart.totalPrice.amount | currency: currencySymbol}}</th>
-        <tr>
-    </thead>
     <tbody class="cart-cost">
         <!-- cart costs -->
         <tr>
@@ -39,7 +32,7 @@
         </tr>
 
         <!-- additional shipping -->
-        <tr >
+        <tr class="shipping-note">
             <td class="additionalshipinfo" colspan="2">{{'ADDITIONAL_SHIPPING_OPTIONS' | translate}}</td>
         </tr>
 
@@ -101,11 +94,16 @@
                 {{cart.totalTax.amount | currency: currencySymbol}}
             </td>
         </tr>
+
         <tr>
-            <td colspan="2">
-                <!-- empty row for padding -->
-            </td>
+            <td colspan="2"><div ng-include="'./js/app/coupons/templates/coupon-apply.html'" ng-controller="CouponCtrl" class="couponWrapper"></div></td>
+            <!-- Apply Coupon -->
         </tr>
+
+        <tr class="order-total">
+            <td>{{'EST_ORDER_TOTAL' | translate}}</td>
+            <td class="text-right"><span>{{cart.totalPrice.amount | currency: currencySymbol}}</span></td>
+        <tr>
     </tbody>
 </table>
         

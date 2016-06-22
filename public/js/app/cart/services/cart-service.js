@@ -20,7 +20,8 @@ angular.module('ds.cart')
             // Prototype for outbound "update cart item" call
             var Item = function (product, price, qty) {
                 this.product = {
-                    id: product.id
+                    id: product.id,
+                    name: product.name
                 };
                 if (product.images) {
                     this.product.images = product.images;
