@@ -17,9 +17,10 @@ describe('CartSvc Test', function () {
     var cartId = 'cartId456';
     var selectedSiteCode = 'europe123';
     var prodId = '123';
+    var prodName = 'Electric Guitar';
     var prod1 = {
         product: {
-            name: 'Electric Guitar',
+            name: prodName,
             id: prodId,
             mixins: {
                 inventory: {
@@ -137,7 +138,7 @@ describe('CartSvc Test', function () {
             });
 
             mockBackend.expectPOST(cartUrl + '/' + cartId + '/items', {
-                "product": { "id": prodId }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2
+                "product": { "id": prodId, "name" : prodName }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2
             })
                 .respond(201, {});
 
@@ -166,7 +167,7 @@ describe('CartSvc Test', function () {
             mockBackend.expectPOST(cartUrl).respond({
                 "cartId": cartId
             });
-            mockBackend.expectPOST(cartUrl + '/' + cartId + '/items', { "product": { "id": prodId }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2 })
+            mockBackend.expectPOST(cartUrl + '/' + cartId + '/items', { "product": { "id": prodId, "name" : prodName }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2 })
                 .respond(500, {});
 
             var cartPromise = cartSvc.addProductToCart(prod1.product, prod1.prices, 2, {});
@@ -186,7 +187,7 @@ describe('CartSvc Test', function () {
             mockBackend.expectPOST(cartUrl).respond({
                 "cartId": cartId
             });
-            mockBackend.expectPOST(cartUrl + '/' + cartId + '/items', { "product": { "id": prodId }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2 })
+            mockBackend.expectPOST(cartUrl + '/' + cartId + '/items', { "product": { "id": prodId, "name" : prodName  }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2 })
                 .respond(201, {});
             cartSvc.addProductToCart(prod1.product, prod1.prices, 2, {});
             mockBackend.expectGET(cartUrl + '/' + cartId + '?siteCode=' + selectedSiteCode).respond(200,
@@ -204,7 +205,7 @@ describe('CartSvc Test', function () {
                                 "sku": "sku1",
                                 "description": "desc",
                                 "id": prodId,
-                                "name": "Electric Guitar",
+                                "name": prodName,
                                 "inStock": false
                             },
                             "price": {
@@ -339,7 +340,8 @@ describe('CartSvc Test', function () {
                 "items": [
                 {
                     "product": {
-                        "id": prodId
+                        "id": prodId,
+                        "name" : prodName
                     },
                     "price": {
                         "currency": "USD",
@@ -389,8 +391,9 @@ describe('CartSvc Test', function () {
                 "items": [
                     {
                         "product": {
-                            "id": prodId
-                        },
+                            "id": prodId,
+                            "name" : prodName
+                    },
                         "price": {
                             "currency": "USD",
                             "effectiveAmount": 5.00
@@ -425,7 +428,8 @@ describe('CartSvc Test', function () {
                 "items": [
                     {
                         "product": {
-                            "id": prodId
+                            "id": prodId,
+                            "name" : prodName
                         },
                         "price": {
                             "currency": "USD",
@@ -475,7 +479,7 @@ describe('CartSvc Test', function () {
                                 "inStock": true,
                                 "description": "desc",
                                 "id": prodId,
-                                "name": "Electric Guitar"
+                                "name": prodName
                             },
                             "price": {
                                 "currency": "USD",
