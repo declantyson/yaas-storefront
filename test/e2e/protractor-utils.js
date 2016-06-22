@@ -1,5 +1,6 @@
 var fs = require('fs');
 var tu = require('./protractor-utils.js');
+var _ = require('underscore');
 
 exports.whiteCoffeeMug = "//a[contains(@href, '/products/55d76ce63a0eafb30e5540c8/')]";
 exports.blackCoffeeMug = "//a[contains(@href, '/products/55d76cec264ebd7a318c236c/')]";
@@ -49,7 +50,7 @@ exports.verifyCartDiscount = function (amount) {
 
 exports.waitForAccountPage = function () {
     browser.wait(function () {
-        return element(by.binding('ACCOUNT_DETAILS')).isPresent();
+        return element(by.binding('account.contactEmail')).isPresent();
     });
 };
 
@@ -73,7 +74,7 @@ exports.clickElement = function (type, pageElement) {
     }
 };
 
-exports.scrollToBottomOfProducts = function (end) {
+exports.scrollToProduct = function (prodEl) {
     var deferred = protractor.promise.defer();
     var maxCount = 10;
     var count = 0;
@@ -81,7 +82,7 @@ exports.scrollToBottomOfProducts = function (end) {
         browser.executeScript('window.scrollTo(0,document.body.scrollHeight)');
         browser.sleep(500);
         count++;
-        if (element(by.xpath(tu.beerBug)).isPresent()) {
+        if (element(by.xpath(prodEl)).isPresent()) {
             deferred.fulfill();
         } else if (count === maxCount) {
             deferred.reject();
@@ -102,13 +103,23 @@ exports.assertProductByRepeaterRow = function (number, productName) {
     expect(element(by.repeater('product in products').row(number).column('product.name')).getText()).toEqual(productName);
 };
 
-exports.selectOption = function (option) {
-    element(by.css('select option[value="' + option + '"]')).click()
+exports.selectOption = function (key, value) {
+    //element(by.css('select option[value="' + option + '"]')).click()
+
+    this.field = element(by.model(key));
+    this.selectField = this.field.element(by.css('.ui-select-search'));
+    this.field.click();
+    this.selectField.clear();
+    this.selectField.sendKeys(value);
+    element.all(by.css('.ui-select-choices-row-inner span')).first().click();
 };
 
+
 exports.sortAndVerifyPagination = function (sort, product1, price1) {
-    tu.selectOption(sort);
-    browser.sleep(250);
+
+    tu.selectOption("sort.selected", sort);
+    browser.sleep(400);
+
     tu.assertProductByRepeaterRow(0, product1);
     expect(element(by.repeater('product in products').row(0).column('prices[product.product.id].effectiveAmount')).getText()).toEqual(price1);
 };
@@ -154,15 +165,31 @@ exports.switchSite = function (site) {
     siteSelector.click();
     browser.sleep(200);
 
-    element.all(by.xpath('//*[@id="siteSelectorLarge"]/div/div/div/div/div/div[1]/ul/li')).each(function (currSite) {
-        currSite.getText().then(function (text) {
-            if (text == site) {
-                currSite.click();
-            }
+    var sites = element.all(by.xpath('//*[@id="siteSelectorLarge"]/div/div/div/div/div/div[1]/ul/li'));
+    expect(sites.count()).toNotBe(0);
+    return sites.map(
+        function (siteElement, index) {
+            return {
+                index: index,
+                currSite: siteElement.getText()
+            };
+        }
+    ).then(function (items) {
+            _.each(items, function (item) {
+                if (item.currSite == site) {
+                    sites.get(item.index).click();
+                }
+                ;
+            })
         });
-    });
+    //element.all(by.xpath('//*[@id="siteSelectorLarge"]/div/div/div/div/div/div[1]/ul/li')).each(function (currSite) {
+    //    currSite.getText().then(function (text) {
+    //        if (text == site) {
+    //            currSite.click();
+    //        }
+    //    });
+    //});
 };
-
 
 
 exports.loginHelper = function (userName, password) {
@@ -183,7 +210,7 @@ exports.loadProductIntoCartAndVerifyCart = function (cartAmount, cartTotal) {
     return tu.loadProductIntoCart(cartAmount, cartTotal, true)
 };
 
-exports.loadProductIntoCart = function(cartAmount, cartTotal, verify) {
+exports.loadProductIntoCart = function (cartAmount, cartTotal, verify) {
     browser.wait(function () {
         return element(by.xpath(tu.whiteCoffeeMug)).isPresent();
     });
@@ -212,15 +239,31 @@ exports.loadProductIntoCart = function(cartAmount, cartTotal, verify) {
 exports.populateAddress = function (country, contact, street, aptNumber, city, state, zip, phone) {
     tu.clickElement('id', "add-address-btn");
     browser.sleep(1000);
+
+    //element(by.css('select option[value="' + option + '"]')).click()
+    this.sort = element(by.model('address.country'));
+    this.selectSort = this.sort.element(by.css('.ui-select-search'));
+    this.sort.click();
+    this.selectSort.clear();
+    this.selectSort.sendKeys(country);
+    element.all(by.css('.ui-select-choices-row-inner span')).first().click();
     // Now all the countries are presented in the ddlb, US is not anymore the first one
-    element(by.cssContainingText('option', country)).click();
+    //element(by.cssContainingText('option', country)).click();
     //element(by.css('select option[value="' + country + '"]')).click();
+
+
     tu.sendKeys('id', 'contactName', contact);
     tu.sendKeys('id', 'street', street);
     tu.sendKeys('id', 'streetAppendix', aptNumber);
     tu.sendKeys('id', 'city', city);
-    if (country === 'United States') {
-        element(by.css('select option[value="' + state + '"]')).click();
+    if ((country == 'United States') || (country == 'Canada')) {
+        this.sort = element(by.model('address.state'));
+        this.selectSort = this.sort.element(by.css('.ui-select-search'));
+        this.sort.click();
+        this.selectSort.clear();
+        this.selectSort.sendKeys(state);
+        element.all(by.css('.ui-select-choices-row-inner span')).first().click();
+        //element(by.css('select option[value="' + state + '"]')).click();
     } else {
         element(by.id('state')).sendKeys(state);
     }
@@ -241,14 +284,17 @@ exports.createAccount = function (emailAddress) {
     tu.clickElement('id', 'create-acct-btn');
     browser.sleep(1000);
     tu.clickElement('id', 'my-account-dropdown');
-    tu.clickElement('id', 'my-account');
+    tu.clickElement('id', 'my-account-link');
     browser.sleep(1000);
 };
 
 exports.fillCreditCardForm = function (ccNumber, ccMonth, ccYear, cvcNumber) {
     tu.sendKeys('id', 'ccNumber', ccNumber);
-    element(by.id('expMonth')).sendKeys(ccMonth);
-    element(by.id('expYear')).sendKeys(ccYear);
+    tu.selectOption('order.creditCard.expMonth', ccMonth);
+    tu.selectOption('order.creditCard.expYear', ccYear);
+
+    //element(by.id('expMonth')).sendKeys(ccMonth);
+    //element(by.id('expYear')).sendKeys(ccYear);
     tu.sendKeys('id', 'cvc', cvcNumber);
 };
 

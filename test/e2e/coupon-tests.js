@@ -5,8 +5,8 @@ var tu = require('./protractor-utils.js');
 describe('coupons:', function () {
 
     function addProductandApplyCoupon(couponCode, price) {
-        tu.loadProductIntoCart('1', price, false);
-        tu.clickElement('linkText', 'ADD COUPON CODE');
+        tu.loadProductIntoCart('1', price);
+        tu.clickElement('id', 'coupon-code');
         tu.sendKeys('id', 'coupon-code', couponCode);
         tu.clickElement('id', 'apply-coupon');
     }
@@ -25,12 +25,13 @@ describe('coupons:', function () {
         expect(element(by.xpath("//div[@id='cart']/div/div[2]")).getText()).toEqual('YOUR CART IS EMPTY');
     }
 
-    function couponCheckoutTest(couponCode, price) {
+    function couponCheckoutTest(couponCode, price, discount) {
         var category = element(by.repeater('top_category in categories').row(1).column('top_category.name'));
         browser.driver.actions().mouseMove(category).perform();
         browser.sleep(200);
         category.click();
         addProductandApplyCoupon(couponCode, price);
+        verifyCartDetails('1', price, discount);
         tu.clickElement('binding', 'CHECKOUT');
         browser.wait(function () {
             return element(by.id("ccNumber")).isPresent();
@@ -38,17 +39,18 @@ describe('coupons:', function () {
         });
         tu.sendKeys('id', 'firstNameAccount', 'Mike');
         tu.sendKeys('id', 'lastNameAccount', 'Night');
-        element(by.id('titleAccount')).sendKeys('Mr.');
-        //tu.sendKeys('id', 'address1Bill', 'test');
-        //tu.sendKeys('id', 'cityBill', 'Seattle');
-        //element(by.id('stateBill')).sendKeys('Washington');
-        //tu.sendKeys('id', 'contactNameBill', "Test Account");
-        //tu.sendKeys('id', 'zipCodeBill', '98101');
+        tu.selectOption('order.account.title', 'MR');
+        //element(by.id('titleAccount')).sendKeys('Mr.');
 
         browser.executeScript('window.scrollTo(0, document.body.scrollHeight)').then(function () {
             browser.sleep(2000);
             tu.clickElement('id', 'preview-order-btn');
         });
+
+        // Verify the price and discount on the checkout page
+        expect(element(by.binding('cart.totalPrice.amount')).getText()).toContain(price);
+        expect(element(by.binding('cart.totalDiscount.amount')).getText()).toContain(discount);
+
 
         browser.sleep(2000);
         browser.executeScript('window.scrollTo(0, document.body.scrollHeight)').then(function () {
@@ -75,15 +77,16 @@ describe('coupons:', function () {
 
         it('should not allow user to add coupon if not logged in', function () {
             tu.loadProductIntoCart('1', '$11.42');
-            tu.clickElement('linkText', 'ADD COUPON CODE');
+            tu.clickElement('id', 'coupon-code');
             tu.sendKeys('id', 'coupon-code', 'SIGNEDIN');
             tu.clickElement('id', 'apply-coupon');
             expect(element(by.binding('couponErrorMessage')).getText()).toEqual('SIGN IN TO USE COUPON CODE');
         });
 
-        it('should not allow user to add coupon below minimum on cart', function () {
+        // TP-4483 opened
+        xit('should not allow user to add coupon below minimum on cart', function () {
             tu.loadProductIntoCartAndVerifyCart('1', '$20.62');
-            tu.clickElement('linkText', 'ADD COUPON CODE');
+            tu.clickElement('id', 'coupon-code');
             tu.sendKeys('id', 'coupon-code', '20MINIMUM');
             tu.clickElement('id', 'apply-coupon');
             expect(element(by.binding('couponErrorMessage')).getText()).toEqual('THE ORDER VALUE IS TOO LOW FOR THIS COUPON.');
@@ -104,10 +107,12 @@ describe('coupons:', function () {
             browser.sleep(200);
             category.click();
             tu.loadProductIntoCartAndVerifyCart('1', '€12.99');
-            tu.clickElement('linkText', 'COUPONCODE HINZUFÜGEN');
+            tu.clickElement('id', 'coupon-code');
             tu.sendKeys('id', 'coupon-code', '10DOLLAR');
             tu.clickElement('id', 'apply-coupon');
-            expect(element(by.binding('couponErrorMessage')).getText()).toEqual('WÄHRUNG FÜR COUPON UNGÜLTIG');
+            //
+            //expect(element(by.binding('couponErrorMessage')).getText()).toEqual('WÄHRUNG FÜR COUPON UNGÜLTIG');
+            expect(element.all(by.css('.error')).first().getText()).toEqual('WÄHRUNG FÜR COUPON UNGÜLTIG');
             browser.sleep(1000);
             tu.clickElement('id', tu.removeFromCart);
             browser.sleep(500);
@@ -116,7 +121,7 @@ describe('coupons:', function () {
         it('should not allow other customers to use specific coupon', function () {
             tu.loginHelper('coupon@hybristest.com', 'password');
             tu.loadProductIntoCart('1', '$11.42');
-            tu.clickElement('linkText', 'ADD COUPON CODE');
+            tu.clickElement('id', 'coupon-code');
             tu.sendKeys('id', 'coupon-code', 'SPECIFIC');
             tu.clickElement('id', 'apply-coupon');
             expect(element(by.binding('couponErrorMessage')).getText()).toEqual('COUPON NOT VALID');
@@ -189,74 +194,75 @@ describe('coupons:', function () {
             removeFromCart();
         });
 
-        it('should not allow user to use expired coupon on cart', function () {
+        // TP-4483 opened
+        xit('should not allow user to use expired coupon on cart', function () {
             addProductandApplyCoupon('EXPIRED', '$11.42');
             expect(element(by.binding('couponErrorMessage')).getText()).toEqual('COUPON HAS EXPIRED.');
             removeFromCart();
         });
 
         // Comment out this test, as Coupon is not available in checkout page at the moment(following changes for shipping rates
-        //it('should not allow purchase under minimum at checkout', function () {
-        //    tu.createAccount('coupontestmin1');
-        //    tu.populateAddress('0', 'Coupon Test', '123 fake place', 'apt 419', 'Boulder', 'CO', '80301', '303-303-3333');
-        //    browser.sleep(1000);
-        //    var category = element(by.repeater('top_category in categories').row(1).column('category.name'));
-        //    browser.driver.actions().mouseMove(category).perform();
-        //    browser.sleep(200);
-        //    category.click();
-        //    tu.loadProductIntoCartAndVerifyCart('1', '$19.27');
-        //    tu.clickElement('binding', 'CHECKOUT');
-        //    browser.wait(function () {
-        //        return element(by.id("ccNumber")).isPresent();
-        //    });
-        //    tu.sendKeys('id', 'firstNameAccount', 'Mike');
-        //    tu.sendKeys('id', 'lastNameAccount', 'Night');
-        //    element(by.id('titleAccount')).sendKeys('Mr.');
-        //    tu.clickElement('linkText', 'Add Coupon Code');
-        //    tu.sendKeys('id', 'coupon-code', '20MINIMUM');
-        //    tu.clickElement('id', 'apply-coupon');
-        //    browser.wait(function () {
-        //        return element(by.binding('couponErrorMessage')).isPresent();
-        //    });
-        //    expect(element(by.binding('couponErrorMessage')).getText()).toContain('The order value is too low for this coupon.');
-        //
-        //});
+        xit('should not allow purchase under minimum at checkout', function () {
+            tu.createAccount('coupontestmin1');
+            tu.populateAddress('0', 'Coupon Test', '123 fake place', 'apt 419', 'Boulder', 'CO', '80301', '303-303-3333');
+            browser.sleep(1000);
+            var category = element(by.repeater('top_category in categories').row(1).column('category.name'));
+            browser.driver.actions().mouseMove(category).perform();
+            browser.sleep(200);
+            category.click();
+            tu.loadProductIntoCartAndVerifyCart('1', '$19.27');
+            tu.clickElement('binding', 'CHECKOUT');
+            browser.wait(function () {
+                return element(by.id("ccNumber")).isPresent();
+            });
+            tu.sendKeys('id', 'firstNameAccount', 'Mike');
+            tu.sendKeys('id', 'lastNameAccount', 'Night');
+            element(by.id('titleAccount')).sendKeys('Mr.');
+            tu.clickElement('linkText', 'Add Coupon Code');
+            tu.sendKeys('id', 'coupon-code', '20MINIMUM');
+            tu.clickElement('id', 'apply-coupon');
+            browser.wait(function () {
+                return element(by.binding('couponErrorMessage')).isPresent();
+            });
+            expect(element(by.binding('couponErrorMessage')).getText()).toContain('The order value is too low for this coupon.');
+
+        });
 
         it('should allow purchase over minimum', function () {
             tu.createAccount('coupontestmin2');
             tu.populateAddress('United States', 'Coupon Test', '123 fake place', 'apt 419', 'Boulder', 'CO', '80301', '303-303-3333');
-            couponCheckoutTest('MINIMUM', '$19.27');
-            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$10.67');
+            couponCheckoutTest('MINIMUM', '$20.05', '-$0.53');
+            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$20.05');
             expect(element(by.css('span.error.ng-binding')).getText()).toEqual('-$0.53');
         });
 
         it('should allow coupon larger than purchase price', function () {
             tu.createAccount('coupontestmax2');
             tu.populateAddress('United States', 'Coupon Test', '123 fake place', 'apt 419', 'Boulder', 'CO', '80301', '303-303-3333');
-            couponCheckoutTest('20DOLLAR', '$11.42');
-            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$10.67');
+            couponCheckoutTest('20DOLLAR', '$9.20', '-$10.67');
+            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$9.20');
             expect(element(by.css('span.error.ng-binding')).getText()).toEqual('-$10.67');
         });
 
         it('should allow percentage off on checkout', function () {
             tu.createAccount('coupontestpercent');
             tu.populateAddress('United States', 'Coupon Test', '123 fake place', 'apt 419', 'Boulder', 'CO', '80301', '303-303-3333');
-            couponCheckoutTest('10PERCENT', '$11.42');
-            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$10.67');
+            couponCheckoutTest('10PERCENT', '$19.47', '-$1.07');
+            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$19.47');
             expect(element(by.css('span.error.ng-binding')).getText()).toEqual('-$1.07');
         });
 
         it('should allow dollar off on checkout', function () {
             tu.createAccount('coupontestdollar');
             tu.populateAddress('United States', 'Coupon Test', '123 fake place', 'apt 419', 'Boulder', 'CO', '80301', '303-303-3333');
-            couponCheckoutTest('10DOLLAR', '$11.42');
-            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$10.67');
+            couponCheckoutTest('10DOLLAR', '$9.92', '-$10.00');
+            tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '$9.92');
             expect(element(by.css('span.error.ng-binding')).getText()).toEqual('-$10.00');
         });
 
         xit('should allow customer to use specific coupon', function () {
             tu.loginHelper('specific@hybristest.com', 'password');
-            couponCheckoutTest('SPECIFIC', '$11.42');
+            couponCheckoutTest('SPECIFIC', '$11.42', 0);
             tu.verifyOrderConfirmation('SPECIFIC', 'SPECIFIC PERSON', '123', 'BOULDER, CO 80301', '$10.67');
             expect(element(by.css('span.error.ng-binding')).getText()).toEqual('-$2.13');
         });
@@ -265,7 +271,7 @@ describe('coupons:', function () {
             tu.createAccount('coupontesteuro');
             tu.populateAddress('0', 'Coupon Test', '123 fake place', 'apt 419', 'Boulder', 'CO', '80301', '303-303-3333');
             tu.selectCurrency('EURO');
-            couponCheckoutTest('5EURO', '€7.99');
+            couponCheckoutTest('5EURO', '€7.99', 0);
             tu.verifyOrderConfirmation('COUPONTEST', 'COUPON TEST', '123', 'BOULDER, CO 80301', '€7.99');
             expect(element(by.css('span.error.ng-binding')).getText()).toEqual('-€5.00');
         });

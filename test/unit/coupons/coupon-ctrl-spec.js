@@ -30,9 +30,7 @@ describe('CouponCtrl Test', function () {
     }
 
     beforeEach(angular.mock.module('ds.coupon'));
-    beforeEach(module('ds.account', function ($provide) {
-        $provide.value('$translate', mockedTranslate);
-    }));
+    beforeEach(angular.mock.module('ds.account'));
 
     beforeEach(inject(function(_$rootScope_, _$controller_, _$q_) {
 
@@ -99,7 +97,8 @@ describe('CouponCtrl Test', function () {
             mockCartSvc = {
                 getLocalCart: jasmine.createSpy().andReturn(mockCart),
                 redeemCoupon: jasmine.createSpy().andReturn(deferredCoupon.promise),
-                removeAllCoupons: jasmine.createSpy().andReturn(deferredCart.promise)
+                removeAllCoupons: jasmine.createSpy().andReturn(deferredCart.promise),
+                removeCoupon: jasmine.createSpy().andReturn(deferredCart.promise)
             };
 
             couponCtrl = $controller('CouponCtrl', {$scope: $scope,$rootScope: $rootScope, 'CartSvc': mockCartSvc,
@@ -135,6 +134,12 @@ describe('CouponCtrl Test', function () {
             expect(mockCartSvc.removeAllCoupons).toHaveBeenCalledWith($scope.cart.id);
         });
 
+        it('should remove a coupon', function () {
+            var couponId = 'abc';
+            $scope.removeCoupon(couponId);
+            expect(mockCartSvc.removeCoupon).toHaveBeenCalledWith($scope.cart.id, couponId);
+        });
+
         it('should update cart and currency symbol when the cart is updated', function () {
             var newCart = angular.copy(couponResult);
             newCart.currency = 'EUR';
@@ -147,7 +152,8 @@ describe('CouponCtrl Test', function () {
 
     describe('Coupon Error Tests', function () {
         it('should handle coupon redeem error', function () {
-            var errorMessage = 'Could not redeem coupon';
+            var errorType = 'coupon_order_total_too_low';
+            var errorMessage = 'The order value is too low for this coupon';
 
             var couponGetResult = {
                 name: 'coupon1234',
@@ -163,7 +169,10 @@ describe('CouponCtrl Test', function () {
                 status: 400,
                 data: {
                     details: [
-                        {message: errorMessage}
+                        {
+                            type: errorType,
+                            message: errorMessage
+                        }
                     ]
                 }
             };
@@ -175,7 +184,8 @@ describe('CouponCtrl Test', function () {
             deferredRedeemCoupon.reject(couponRedeemResult);
 
             mockCouponSvc = {
-                getCoupon: jasmine.createSpy().andReturn(deferredGetCoupon.promise)
+                getCoupon: jasmine.createSpy().andReturn(deferredGetCoupon.promise),
+                redeemCouponError: jasmine.createSpy().andReturn(deferredGetCoupon.promise),
             };
 
             mockCartSvc = {
@@ -192,8 +202,10 @@ describe('CouponCtrl Test', function () {
             $scope.$apply();
 
             expect(mockCartSvc.redeemCoupon).toHaveBeenCalled();
+            
+            expect(mockCouponSvc.redeemCouponError).toHaveBeenCalled();
 
-            expect($scope.couponErrorMessage).toEqualData(errorMessage);
+            //expect($scope.couponErrorMessage).toEqualData(errorMessage);
         });
 
         it('should handle coupon GET 404', function () {
