@@ -67,7 +67,7 @@ angular.module('ds.shared')
         },
 
         // identifies the languages for which labels have been localized - see public/js/app/shared/i18n
-        translateLanguages:['en','de'],
+        translateLanguages:['en', 'fr', 'de'],
         // fallback language for label localization
         translateDefault: 'en',
 

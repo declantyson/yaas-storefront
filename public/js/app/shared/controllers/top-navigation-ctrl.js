@@ -20,7 +20,8 @@ angular.module('ds.shared')
 
             $scope.GlobalData = GlobalData;
             $scope.categories = CategorySvc.getCategoriesFromCache();
-
+            $scope.selectedSite = GlobalData.getSite();
+            
             $scope.isAuthenticated = AuthSvc.isAuthenticated;
             $scope.user = GlobalData.user;
 

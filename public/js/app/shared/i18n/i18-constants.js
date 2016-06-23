@@ -16,5 +16,5 @@ angular.module('ds.i18n')
     // default and supported languages for static information only - service language preferences are set in "GlobalData" via config service
     .constant('translateSettings', {
         defaultLanguageCode: 'en',
-        supportedLanguages: ['en', 'de']
+        supportedLanguages: ['en', 'fr', 'de']
     });

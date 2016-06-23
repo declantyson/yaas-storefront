@@ -75,7 +75,7 @@
 
                         </div>
                         <div class="productInfoContainer text-center">
-                            <div class="name">{{ product.product.name }}</div>
+                            <div class="name">{{ product.product.name[language] || product.product.name[defaultLanguage] }}</div>
                             <div ng-if="prices[product.product.id].salePrice" class="price">
                                     <span class="price originalPrice"><strike>{{ prices[product.product.id].originalAmount | currency: currencySymbol }}</strike></span>
                                     <span class="price salesPrice">{{prices[product.product.id].effectiveAmount | currency: currencySymbol}}</span>

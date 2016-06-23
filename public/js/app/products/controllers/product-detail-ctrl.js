@@ -17,10 +17,10 @@ angular.module('ds.products')
      * Listens to the 'cart:updated' event.  Once the item has been added to the cart, and the updated
      * cart information has been retrieved from the service, the 'cart' view will be shown.
      */
-    .controller('ProductDetailCtrl', ['$scope', '$rootScope', 'CartSvc', 'product', 'lastCatId', 'settings', 'GlobalData', 'CategorySvc','$filter', 'ProductAttributeSvc', '$modal', 'shippingZones', 'Notification', 'CommittedMediaFilter',
-        function($scope, $rootScope, CartSvc, product, lastCatId, settings, GlobalData, CategorySvc, $filter, ProductAttributeSvc, $modal, shippingZones, Notification, CommittedMediaFilter) {
+    .controller('ProductDetailCtrl', ['$scope', '$rootScope', 'CartSvc', 'product', 'lastCatId', 'settings', 'GlobalData', 'CategorySvc','$filter', 'ProductAttributeSvc', '$modal', 'shippingZones', 'Notification', 'CommittedMediaFilter', '$window',
+        function($scope, $rootScope, CartSvc, product, lastCatId, settings, GlobalData, CategorySvc, $filter, ProductAttributeSvc, $modal, shippingZones, Notification, CommittedMediaFilter, $window) {
             var modalInstance;
-            
+
             $scope.product = product;
             $scope.shippingZones = shippingZones;
             $scope.noShippingRates = true;
@@ -29,17 +29,16 @@ angular.module('ds.products')
             $scope.category = product.categories;
             $scope.breadcrumbData = angular.copy($scope.category);
             $scope.taxConfiguration = GlobalData.getCurrentTaxConfiguration();
-            $scope.formattedDescription = product.product.description || '';
+            $scope.localisedName = product.product.name[GlobalData.getLanguageCode()] || '';
+            $scope.formattedDescription = product.product.description[GlobalData.getLanguageCode()] || '';
+
+            if($scope.localisedName === '') {
+                // Language not supported for this product
+                $window.location.assign('/');
+            }
 
             if($scope.formattedDescription !== '') {
                 $scope.formattedDescription = $scope.formattedDescription.replace(/(\n)+/g, '<br />');
-            }
-
-            var currentLanguage = GlobalData.getLanguageCode();
-            if(currentLanguage !== GlobalData.defaultLang) {
-                // If the product is not translated to the current language,
-                // redirect back to the homepage
-                console.log($filter('translate')(product.product.name));
             }
 
             if(!!lastCatId) {

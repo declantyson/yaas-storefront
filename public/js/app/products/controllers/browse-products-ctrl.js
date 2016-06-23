@@ -25,6 +25,8 @@ angular.module('ds.products')
             //$scope.sort = {selected: GlobalData.getProductRefinements()[0].id};
             $scope.products = [];
             $scope.total = GlobalData.products.meta.total;
+            $scope.language = GlobalData.getLanguageCode();
+            $scope.defaultLanguage = 'en';
             $scope.store = GlobalData.store;
             $scope.prices = {};
             $scope.requestInProgress = false;

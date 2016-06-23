@@ -29,6 +29,18 @@ angular.module('ds.products')
             });
         }
 
+        function applyHybrisLanguageHeader(RestangularConfigurer){
+            RestangularConfigurer.addFullRequestInterceptor(function(element, operation, route, url, headers, params, httpConfig) {
+
+                return {
+                    element: element,
+                    params: params,
+                    headers: _.extend(headers, {'hybris-languages': GlobalData.getHybrisLanguageHeader() }, {'hybris-currency': GlobalData.getCurrencyId()}),
+                    httpConfig: httpConfig
+                };
+            });
+        }
+
             return {
                 /** Endpoint for Prices API.*/
                 Prices: Restangular.withConfig(function (RestangularConfigurer) {
@@ -55,7 +67,7 @@ angular.module('ds.products')
                         result.headers = headers;
                         return result;
                     });
-                    applyLanguageHeader(RestangularConfigurer);
+                    applyHybrisLanguageHeader(RestangularConfigurer);
                 }),
                 /** Endpoint for Category API.*/
                 Categories: Restangular.withConfig(function(RestangularConfigurer) {

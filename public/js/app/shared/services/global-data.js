@@ -172,6 +172,10 @@ angular.module('ds.shared')
                     return languageMap[languageCode];
                 },
 
+                getHybrisLanguageHeader: function (){
+                    return languageCode + ', ' + defaultLang;
+                },
+
                 /** Returns the 'accept-languages' header for the application.*/
                 getAcceptLanguages: function () {
                     return acceptLanguages;
