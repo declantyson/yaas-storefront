@@ -1,0 +1,431 @@
+#* @vtlvariable name="d" type="com.hybris.caas.ordermashup.client.EmailTemplateData" *#
+
+<!-- VELOCITY MACROS -->
+#macro(e $arg)
+#if ("$!arg" != "")
+$!{tools.esc.html($arg)}
+#end
+#end
+
+#macro(format_amount $num)
+$!{tools.number.format('###,###,##0.00', $num, $tools.date.locale)}
+#end
+
+#* Escapes string, and if not null, also inserts a line break after the escaped string *#
+#macro(esc_with_line_break $arg)
+#if("$!arg.trim()" != "")
+$!{tools.esc.html($arg)} <br>
+#end
+#end
+
+<!-- // VELOCITY MACROS -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=650">
+    <title>*|Order #e(${d.order_id}) has been placed by #e(${d.order.customer.name}) !|*</title>
+    <style type="text/css">
+        /* /\/\/\/\/\/\/\/\/ CLIENT-SPECIFIC STYLES /\/\/\/\/\/\/\/\/ */
+        #outlook a{padding:0;} /* Force Outlook to provide a "view in browser" message */
+        .ReadMsgBody{width:100%;} .ExternalClass{width:100%;} /* Force Hotmail to display emails at full width */
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;} /* Force Hotmail to display normal line spacing */
+        body, table, td, p, a, li, blockquote{-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;} /* Prevent WebKit and Windows mobile changing default text sizes */
+        table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;} /* Remove spacing between tables in Outlook 2007 and up */
+        img{-ms-interpolation-mode:bicubic;} /* Allow smoother rendering of resized image in Internet Explorer */
+        /* /\/\/\/\/\/\/\/\/ RESET STYLES /\/\/\/\/\/\/\/\/ */
+        body{margin:0; padding:0;}
+        img{border:0; height:auto; line-height:100%; outline:none; text-decoration:none;}
+        table{border-collapse:collapse !important;}
+        body, #bodyTable, #bodyCell{height:100% !important; margin:0; padding:0; width:100% !important;}
+        /* /\/\/\/\/\/\/\/\/ TEMPLATE STYLES /\/\/\/\/\/\/\/\/ */
+        /* ========== Page Styles ========== */
+        #contentContainer{width:600px;}
+        * {
+            font-family: Helvetica, Arial, sans-serif;
+
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: none;
+            color: #202122;
+            font-size: 14px;
+        }
+        #header, #logoHeader {
+            background-color: #3c3c3c;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+        }
+        #logoHeader td {
+            padding-top: 30px;
+        }
+        #order-table{
+            background-color: #f0f0f0;
+            color: #3c3c3c;
+        }
+        .header-lg{
+            font-size: 49px;
+        }
+
+        .header-h2{
+            font-weight: bold;
+            font-size: 14px;
+
+        }
+
+        #order-table-headline{
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        @media only screen and (max-device-width: 480px) {
+            table#contentContainer {
+                width:320px !important;
+            }
+            #product-table{
+                margin-bottom: 30px!important;
+            }
+            #product-table tr td{
+                display: block!important;
+                width: 100%!important;
+                border: none!important;
+                padding-bottom: 0px!important;
+                padding-left: 10px!important;
+                padding-right: 10px!important;
+            }
+            #product-table td:first-child{
+                border-top: 1px solid #c0c0c0!important;
+            }
+
+            #product-table td#product-total{
+                padding-bottom: 20px!important;
+            }
+
+            #summary-table tr td{
+                display: block!important;
+                width: 100%!important;
+                border: none!important;
+                padding-bottom: 0px!important;
+                padding-left: 10px!important;
+                padding-right: 10px!important;
+            }
+
+            #summary-table tr:last-child td{
+                padding-bottom: 40px!important;
+            }
+
+            #order-table-headline{
+                margin-bottom: 20px;
+            }
+
+            #order-table-headline tr td{
+                display: block!important;
+                width: 100%!important;
+                border: none!important;
+                padding-bottom: 0px!important;
+                padding-top: 20px!important;
+                padding-left: 10px!important;
+                padding-right: 10px!important;
+                text-align: left!important;
+            }
+
+            #info-spacer{
+                width: 10px!important;
+            }
+
+        }
+
+    </style>
+</head>
+<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+<center>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable" styles="font-family: Helvetica, Arial, sans-serif;">
+        <tr>
+            <td align="center" valign="top" id="bodyCell">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td align="center" valign="top" id="navCell">
+                            <!-- LOGO HEADER -->
+                            <table border="0" cellpadding="0" cellspacing="0" id="logoHeader">
+                                <tr>
+                                    <td valign="top" align="center" >
+                                        <img style="max-width:180px;" src="#e(${d.logo})" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- // LOGO HEADER -->
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td  valign="top" align="center">
+                            <!-- HEADER -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="header" bgcolor="#333333" >
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="600px" style="width: 600px;" id="contentContainer">
+                                            <tr>
+                                                <td align="center" valign="top" style="color:#fff; padding-top: 30px; padding-bottom: 10px; font-family: Helvetica, Arial, sans-serif;">
+                                                    <h1 class="header-lg" style="color: #fff; ">CONGRATULATIONS<br/> YOU HAVE A NEW ORDER!</h1>
+                                                    <b>#e(${d.order_id})</b> was placed on $!tools.date.format("EEEEE MMMMM d, yyyy 'at' H:mm", $tools.convert.toDate(${d.order.created}), $tools.date.locale)
+                                                    <p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- // HEADER -->
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td  valign="top" align="center">
+                            <!-- SUMMARY -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="600px" id="contentContainer" >
+                                            <tr>
+                                                <td align="center" valign="top">
+                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" id="summary-table">
+                                                        <tr>
+                                                        <tr>
+                                                            <td valign="top" align="left" style="padding-top: 30px; font-family: Helvetica, Arial, sans-serif;">
+                                                                <h2 class="header-h2">Shipping Address</h2>
+                                                                #esc_with_line_break(${d.order.shippingAddress.contactName})
+                                                                #esc_with_line_break(${d.order.shippingAddress.companyName})
+                                                                #esc_with_line_break("$!{d.order.shippingAddress.street} $!{d.order.shippingAddress.streetNumber} $!{d.order.shippingAddress.streetAppendix}")
+
+                                                                #esc_with_line_break(${d.order.shippingAddress.extraLine1})
+                                                                #esc_with_line_break(${d.order.shippingAddress.extraLine2})
+                                                                #esc_with_line_break(${d.order.shippingAddress.extraLine3})
+                                                                #esc_with_line_break(${d.order.shippingAddress.extraLine4})
+
+                                                                #esc_with_line_break("$!{d.order.shippingAddress.city} $!{d.order.shippingAddress.state} $!{d.order.shippingAddress.zipCode}")
+                                                                #esc_with_line_break(${d.order.shippingAddress.country})
+                                                            </td>
+                                                            <td valign="top" align="left" style="padding-top: 30px; font-family: Helvetica, Arial, sans-serif;">
+                                                                <h2 class="header-h2">Billing Address</h2>
+                                                                #esc_with_line_break(${d.order.billingAddress.contactName})
+                                                                #esc_with_line_break(${d.order.billingAddress.companyName})
+                                                                #esc_with_line_break("$!{d.order.billingAddress.street} $!{d.order.billingAddress.streetNumber} $!{d.order.billingAddress.streetAppendix}")
+
+                                                                #esc_with_line_break(${d.order.billingAddress.extraLine1})
+                                                                #esc_with_line_break(${d.order.billingAddress.extraLine2})
+                                                                #esc_with_line_break(${d.order.billingAddress.extraLine3})
+                                                                #esc_with_line_break(${d.order.billingAddress.extraLine4})
+
+                                                                #esc_with_line_break("$!{d.order.billingAddress.city} $!{d.order.billingAddress.state} $!{d.order.billingAddress.zipCode}")
+                                                                #esc_with_line_break(${d.order.billingAddress.country})
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td valign="top" align="left" style="padding-top: 30px; font-family: Helvetica, Arial, sans-serif;">
+                                                                <h2 class="header-h2">Delivery Information</h2>
+                                                                #e(${d.deliveryInformation})
+                                                            </td>
+                                                            <td valign="top" align="left" style="padding-top: 30px; font-family: Helvetica, Arial, sans-serif;">
+                                                                <h2 class="header-h2">Payment</h2>
+
+                                                                #set($paymentMethods = "")
+                                                                #set($i = 1)
+                                                                #foreach($payment in ${d.order.payments})
+                                                                #set($paymentMethods = $paymentMethods + ${payment.method})
+
+                                                                #if($i < ${d.order.payments.size()})
+                                                                #set($paymentMethods = $paymentMethods + ", ")
+                                                                #end
+                                                                #set($i = $i + 1)
+                                                                #end
+                                                                #e(${paymentMethods})
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="4" style="padding-bottom: 50px;">
+                                                                &nbsp;
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- // SUMMARY -->
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td  valign="top" align="center">
+                            <!-- ORDER -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="order-table" bgcolor="#f0f0f0" style="background-color: #f0f0f0;">
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <!-- BEGIN ORDER -->
+                                        <table border="0" cellpadding="0" cellspacing="0" width="600px"  id="contentContainer" >
+                                            <tr>
+                                                <td align="left">
+                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" id="order-table-headline" style="font-size: 18px; font-weight: bold;">
+                                                        <tr>
+                                                            <td style="padding-top: 40px; padding-bottom: 40px; padding-left: 10px; font-family: Helvetica, Arial, sans-serif;">
+                                                                ${d.order.entries.size()} item(s) in order
+                                                            </td>
+                                                            <td align="right" style="padding-top: 40px; padding-right: 10px;  padding-bottom: 40px; font-family: Helvetica, Arial, sans-serif;">
+                                                                Order Total #e(${d.order.currency}) #format_amount(${d.order.totalPrice})
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="left" style="font-family: Helvetica, Arial, sans-serif;">
+                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" id="product-table">
+                                                        #foreach($entry in ${d.order.entries})
+                                                        <!-- PRODUCT / ORDER_ENTRY-->
+                                                        <tr>
+                                                            <td valign="top" style="padding-top: 30px; padding-bottom: 30px; padding-left: 10px; padding-right: 10px; border-top: 1px solid #c0c0c0; font-family: Helvetica, Arial, sans-serif;">
+                                                                #set($product_image = "")
+                                                                #if ($entry.product.images.size() > 0)
+                                                                #set($product_image = ${entry.product.images.get(0).url})
+                                                                #end
+                                                                <img style="max-width:180px;" src="#e($product_image)" />
+                                                            </td>
+                                                            <td valign="top" style="padding-top: 30px; padding-bottom: 30px; padding-right: 10px; border-top: 1px solid #c0c0c0; font-family: Helvetica, Arial, sans-serif;">
+                                                                <h3 style="color: #0079ff; font-size: 16px; font-weight: normal; margin: 0px;">#e(${entry.product.name})</h3>
+                                                                <h4 style="color: #7d7e7f; font-size: 12px; font-weight: normal;margin: 0;">SKU #e(${entry.product.sku})</h4><br />
+                                                            </td>
+                                                            <td valign="top" style="padding-top: 30px; padding-bottom: 30px; padding-right: 10px; border-top: 1px solid #c0c0c0; font-family: Helvetica, Arial, sans-serif;">
+                                                                    <span style="padding-bottom: 10px;">#e(${d.order.currency}) #format_amount(${entry.unitPrice})<br/>
+
+                                                                        #if($!{entry.measurementUnit} && $!{entry.measurementUnit.value})
+                                                                            <span style="color: #3c3c3c; padding-bottom: 10px;">
+                                                                            #e($!{entry.measurementUnit.value})#e($!{entry.measurementUnit.unit}) per package
+                                                                        </span><br/>
+                                                                        #end
+
+                                                                        #if($entry.tax.lines.size() > 0)
+                                                                            <span style="color: #3c3c3c; padding-bottom: 10px;">Tax Information: </span><br/>
+                                                                            #foreach($taxLine in ${entry.tax.lines})
+                                                                                <span>#e(${taxLine.name}) - #e(${taxLine.currency}) #format_amount(${taxLine.amount})</span><br/>
+                                                                            #end
+                                                                        #end
+                                                            </td>
+                                                            <td valign="top" style="padding-top: 30px; padding-bottom: 30px; padding-right: 10px; border-top: 1px solid #c0c0c0; font-family: Helvetica, Arial, sans-serif;">
+                                                                <span style="color: #3c3c3c">Qty: #e(${entry.amount})</span>
+                                                            </td>
+                                                            <td valign="top" style="padding-top: 30px; padding-bottom: 30px; padding-right: 10px;  border-top: 1px solid #c0c0c0; text-align: right; font-weight: bold; font-family: Helvetica, Arial, sans-serif;" id="product-total">
+                                                                <span style="color: #3c3c3c">#e(${d.order.currency}) #format_amount(${entry.totalPrice})</span>
+                                                            </td>
+                                                        </tr>
+                                                        <!-- // PRODUCT / ORDER_ENTRY -->
+                                                        #end
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <!-- // END ORDER -->
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- // ORDER -->
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" valign="top" id="navCell">
+                            <!-- Summary -->
+                            <table border="0" cellpadding="0" cellspacing="0" id="contentContainer">
+                                <tr>
+                                    <td valign="top" align="center" width="250px" style="width: 250px;" id="info-spacer">&nbsp;
+                                    </td>
+                                    <td valign="top" align="left" >
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+                                            <tr>
+                                                <td style="padding-top:10px; color: #717171; font-family: Helvetica, Arial, sans-serif;">Subtotal
+                                                    #if(!$d.order.tax.total.inclusive)
+                                                    excl. tax
+                                                    #end
+                                                </td>
+                                                <td style="padding-top:10px; text-align: right; color: #717171; font-family: Helvetica, Arial, sans-serif;" align="right">#e(${d.order.currency}) #format_amount(${d.orderSubtotal})</td>
+                                            </tr>
+                                            #if(${d.orderDiscount} != 0)
+                                            <tr>
+                                                <td style="padding-top: 10px; color: #ed1c24; font-family: Helvetica, Arial, sans-serif;">Discount</td>
+                                                <td style="padding-top: 10px; color: #ed1c24; text-align: right; font-family: Helvetica, Arial, sans-serif;" align="right">
+                                                    #e(${d.order.currency}) #format_amount("-${d.orderDiscount}")
+                                                </td>
+                                            </tr>
+                                            #end
+
+                                            <tr>
+                                                <td style="padding-top: 10px; color: #717171; font-family: Helvetica, Arial, sans-serif; ">Shipping</td>
+                                                <td style="padding-top: 10px; color: #717171; text-align: right; font-family: Helvetica, Arial, sans-serif;" align="right">
+                                                    #e(${d.order.currency}) #format_amount(${d.order.shipping.total.amount})
+                                                </td>
+                                            </tr>
+
+                                            #if(!$d.order.tax.total.inclusive)
+                                            #foreach($tax in ${d.order.tax.lines})
+                                            <tr>
+                                                <td style="padding-top: 10px; color: #717171; font-family: Helvetica, Arial, sans-serif;">#e(${tax.name})</td>
+                                                <td style="padding-top: 10px; color: #717171; text-align: right; font-family: Helvetica, Arial, sans-serif;" align="right">#e(${tax.currency}) #format_amount(${tax.amount})</td>
+                                            </tr>
+                                            #end
+                                            #end
+
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>&nbsp;</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="padding-top: 20px; padding-right:20px; font-size:18px; font-weight:bold; border-top: 1px solid #c0c0c0; font-family: Helvetica, Arial, sans-serif;">Order Total </td>
+                                                <td style="padding-top: 20px; font-size:18px; font-weight:bold; text-align: right;  border-top: 1px solid #c0c0c0; font-family: Helvetica, Arial, sans-serif;" align="right">#e(${d.order.currency}) #format_amount(${d.order.totalPrice})</td>
+                                            </tr>
+                                            #if($d.order.tax.total.inclusive)
+                                            <tr>
+                                                <td style="padding-top: 10px; color: #c0c0c0; font-family: Helvetica, Arial, sans-serif;">incl. tax</td>
+                                                <td style="padding-top: 10px; color: #c0c0c0; text-align: right; font-family: Helvetica, Arial, sans-serif;" align="right">#e(${d.order.tax.total.currency}) #format_amount(${d.order.tax.total.amount})</td>
+                                            </tr>
+                                            #end
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- // Summary -->
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td  valign="top" align="center">
+                            <!-- footer -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="footer" bgcolor="#5b5b5b" style="background-color: #5b5b5b;">
+                                <tr>
+                                    <td align="center" valign="top">
+
+                                        <table border="0" cellpadding="0" cellspacing="0" width="600px"  id="contentContainer" >
+                                            <tr>
+                                                <td valgin="top" style="color: #fff; padding-top: 30px; padding-bottom: 30px; text-align: center; font-family: Helvetica, Arial, sans-serif;" align="center">
+                                                    <span>&copy; ${tools.date.year} hybris YaaS</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</center>
+</body>
+</html>
