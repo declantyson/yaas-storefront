@@ -35,6 +35,13 @@ angular.module('ds.products')
                 $scope.formattedDescription = $scope.formattedDescription.replace(/(\n)+/g, '<br />');
             }
 
+            var currentLanguage = GlobalData.getLanguageCode();
+            if(currentLanguage !== GlobalData.defaultLang) {
+                // If the product is not translated to the current language,
+                // redirect back to the homepage
+                console.log($filter('translate')(product.product.name));
+            }
+
             if(!!lastCatId) {
                 if(lastCatId === 'allProducts'){
                     var allProductsName = $filter('translate')('ALL_PRODUCTS');

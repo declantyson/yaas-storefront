@@ -12,7 +12,7 @@
             <div class="col-md-6">
                 <div class="gallery product-gallery">
                     <div class="row">
-                        <div class="col-md-10">
+                        <div class="col-md-9">
                             <div class="image">
                                 <div ng-repeat="image in product.product.media">
                                     <img class="lazyOwl" data-src="{{image.url}}" data-zoom="{{image.url}}" alt="">
@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-md-2">
                             <div class=" thumbnails" ng-if="product.product.media && product.product.media.length > 1">
-                                <a ng-repeat="image in product.product.media" class="item" href="#">
+                                <a ng-repeat="image in product.product.media" class="item">
                                     <img class="lazyOwl" data-src="{{image.url}}" alt="">
                                 </a>
                             </div>
