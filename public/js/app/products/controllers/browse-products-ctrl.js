@@ -22,7 +22,6 @@ angular.module('ds.products')
             $scope.setSortedPageSize = void 0;
             $scope.setSortedPageNumber = 1;
             $scope.sort = 'metadata.createdAt:desc';
-            //$scope.sort = {selected: GlobalData.getProductRefinements()[0].id};
             $scope.products = [];
             $scope.total = GlobalData.products.meta.total;
             $scope.language = GlobalData.getLanguageCode();
@@ -197,13 +196,14 @@ angular.module('ds.products')
                             // we only want to show published products on this list
                             q: qSpec
                         };
+
                         if ($scope.sort) {
-                            query.sort = $scope.sort.selected;
+                            query.sort = $scope.sort;
                         }
 
                         $scope.requestInProgress = true;
 
-                        ProductSvc.queryProductDetailsList(query).then(function (products) {
+                        ProductSvc.queryProductDetailsListFromListPage(query).then(function (products) {
                             $scope.requestInProgress = false;
                             if (products) {
                                 GlobalData.products.meta.total = parseInt(products.headers[settings.headers.paging.total.toLowerCase()], 10) || 0;
@@ -250,7 +250,7 @@ angular.module('ds.products')
             if (!!$location.search().page) {
                 $scope.loadedPages = parseInt($location.search().page);
                 $scope.pageSize = $scope.pageSize * $scope.loadedPages;
-                $scope.sort = GlobalData.products.lastSort || {selected: ''};
+                $scope.sort = GlobalData.products.lastSort || 'metadata.createdAt:desc';
                 $scope.loadMorePages = true;
             }
 
@@ -279,11 +279,12 @@ angular.module('ds.products')
                  it is important to note that the $scope.pageNumber and $scope.pageSize are not being modified as they  need
                  to be unmidified for the addMore() method to work for the inifinte scroll functionality
                  */
+
                 var query = {
                     pageNumber: $scope.setSortedPageNumber,
                     pageSize: $scope.setSortedPageSize,
                     expand: 'media',
-                    sort: $scope.sort.selected
+                    sort: $scope.sort
                 };
 
                 //we only want to show published products on this list
@@ -295,7 +296,7 @@ angular.module('ds.products')
 
 
 
-                ProductSvc.queryProductDetailsList(query).then(function (products) {
+                ProductSvc.queryProductDetailsListFromListPage(query).then(function (products) {
                     $scope.requestInProgress = false;
                     if (products) {
                         GlobalData.products.meta.total = parseInt(products.headers[settings.headers.paging.total.toLowerCase()], 10) || 0;

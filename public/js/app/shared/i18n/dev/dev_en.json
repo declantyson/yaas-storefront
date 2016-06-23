@@ -373,6 +373,10 @@
 
     //XLST
     "NEWEST": "newest",
+    //XSLT
+    "NAME_SORT_ASC" : "Name A-Z",
+    //XSLT
+    "NAME_SORT_DESC" : "Name Z-A",
     //XFLD
     "OF": "of",
     //XLST

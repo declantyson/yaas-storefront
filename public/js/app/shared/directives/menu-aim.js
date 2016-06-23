@@ -25,6 +25,10 @@ $(document).on('mouseover', '.js-megamenutoggle', function() {
     }
 });
 
+$(document).on('click', 'a.logo', function() {
+    $('.js-megamenutoggle').removeClass('mactive');
+});
+
 $(document).on('click', '.js-megamenutoggle', function() {
     $('.js-megamenutoggle').removeClass('mactive');
     $(this).addClass('mactive');

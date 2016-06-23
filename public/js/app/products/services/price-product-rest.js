@@ -59,6 +59,17 @@ angular.module('ds.products')
 
                     }),
                 /** Endpoint for ProductDetails API. */
+                ProductDetailsForList: Restangular.withConfig(function(RestangularConfigurer) {
+                    RestangularConfigurer.setBaseUrl(siteConfig.apis.productDetails.baseUrl);
+                    RestangularConfigurer.setResponseInterceptor(function (data, operation, what, url, response) {
+                        var headers = response.headers();
+                        var result = response.data;
+                        result.headers = headers;
+                        return result;
+                    });
+                    applyLanguageHeader(RestangularConfigurer);
+                }),
+                /** Endpoint for ProductDetails API with slightly different headers for the details page. */
                 ProductDetails: Restangular.withConfig(function(RestangularConfigurer) {
                     RestangularConfigurer.setBaseUrl(siteConfig.apis.productDetails.baseUrl);
                     RestangularConfigurer.setResponseInterceptor(function (data, operation, what, url, response) {

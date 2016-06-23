@@ -29,8 +29,9 @@ angular.module('ds.products')
             $scope.category = product.categories;
             $scope.breadcrumbData = angular.copy($scope.category);
             $scope.taxConfiguration = GlobalData.getCurrentTaxConfiguration();
-            $scope.localisedName = product.product.name[GlobalData.getLanguageCode()] || '';
-            $scope.formattedDescription = product.product.description[GlobalData.getLanguageCode()] || '';
+            $scope.language = GlobalData.getLanguageCode();
+            $scope.localisedName = product.product.name[$scope.language] || '';
+            $scope.formattedDescription = product.product.description[$scope.language] || '';
 
             if($scope.localisedName === '') {
                 // Language not supported for this product

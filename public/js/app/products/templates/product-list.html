@@ -25,10 +25,17 @@
 
                                 <div>
                                     <span class='css-select-moz'>
-                                        <select ng-model="sort" ng-change="setSortedPage()" class="form-control">
+                                        <select ng-init="'metadata.createdAt:desc'" ng-model="sort" ng-change="setSortedPage()" class="form-control">
                                             <option value="metadata.createdAt:desc">{{'NEWEST' | translate}}</option>
-                                            <option value="name">A-Z</option>
-                                            <option value="name:desc">Z-A</option>
+                                            <!--
+
+                                            Currently the API sort by price is not working, will add this back in when it is
+                                            <option value="price">{{ 'PRICE_HIGH_LOW' | translate }}</option>
+                                            <option value="price:desc">{{ 'PRICE_LOW_HIGH' | translate }}</option>
+
+                                            -->
+                                            <option value="name">{{'NAME_SORT_ASC' | translate}}</option>
+                                            <option value="name:desc">{{'NAME_SORT_DESC' | translate}}</option>
                                         </select>
                                     </span>
                                 </div>
@@ -75,7 +82,7 @@
 
                         </div>
                         <div class="productInfoContainer text-center">
-                            <div class="name">{{ product.product.name[language] || product.product.name[defaultLanguage] }}</div>
+                            <div class="name">{{ product.product.name }}</div>
                             <div ng-if="prices[product.product.id].salePrice" class="price">
                                     <span class="price originalPrice"><strike>{{ prices[product.product.id].originalAmount | currency: currencySymbol }}</strike></span>
                                     <span class="price salesPrice">{{prices[product.product.id].effectiveAmount | currency: currencySymbol}}</span>
