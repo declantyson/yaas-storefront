@@ -14,6 +14,7 @@ describe('ProductDetailCtrl', function () {
 
     var $scope, $rootScope, $controller, $q, mockedCartSvc, mockedShippingZones, shippingZones, cartDef, mockedGlobalData={
         getCurrencySymbol: jasmine.createSpy('getCurrencySymbol').andReturn('USD'),
+        getLanguageCode: jasmine.createSpy('getLanguageCode').andReturn('en'),
         getCurrentTaxConfiguration: jasmine.createSpy('getCurrentTaxConfiguration').andReturn({ rate: "7", label: "Includes Tax/VAT", included: false })
     };
 
@@ -58,7 +59,12 @@ describe('ProductDetailCtrl', function () {
 
     var mockProduct = {
         product:{
-            name: 'product1',
+            name: {
+                'en': 'product1'
+            },
+            description : {
+                'en': 'productDescription'
+            },
             id: 123,
             published: true,
         },
@@ -213,7 +219,12 @@ describe('ProductDetailCtrl', function () {
     describe('productWithMainImage', function(){
         var mockProductWithMain = {
             product: {
-                name: 'product1',
+                name: {
+                    'en' : 'product1'
+                },
+                description: {
+                    'en' : 'productDescription'
+                },
                 published: true,
                 media: [
                     { url: 'http://url1' },
@@ -238,7 +249,12 @@ describe('ProductDetailCtrl', function () {
     describe('productWithoutMainImage', function(){
         var mockProductWithImages = {
             product:{
-                name: 'product1',
+                name: {
+                    'en' : 'product1'
+                },
+                description: {
+                    'en' : 'productDescription'
+                },
                 id: 123,
                 published: true,
                 media: [

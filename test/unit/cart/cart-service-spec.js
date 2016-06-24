@@ -12,15 +12,22 @@
 
 describe('CartSvc Test', function () {
     var mockBackend, $scope, $rootScope, cartSvc, siteConfig, cartUrl, mockedGlobalData = {
-        getTaxType: jasmine.createSpy('getTaxType').andReturn('AVALARA')
+        getTaxType: jasmine.createSpy('getTaxType').andReturn('AVALARA'),
+        getLanguageCode: jasmine.createSpy('getLanguageCode').andReturn('en')
     };
     var cartId = 'cartId456';
     var selectedSiteCode = 'europe123';
     var prodId = '123';
     var prodName = 'Electric Guitar';
+    var prodDesc = 'Play your epic solos';
     var prod1 = {
         product: {
-            name: prodName,
+            name: {
+                "en" : prodName
+            },
+            description : {
+                "en" : prodDesc
+            },
             id: prodId,
             mixins: {
                 inventory: {
@@ -187,7 +194,7 @@ describe('CartSvc Test', function () {
             mockBackend.expectPOST(cartUrl).respond({
                 "cartId": cartId
             });
-            mockBackend.expectPOST(cartUrl + '/' + cartId + '/items', { "product": { "id": prodId, "name" : prodName  }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2 })
+            mockBackend.expectPOST(cartUrl + '/' + cartId + '/items', { "product": { "id": prodId, "name" : prodName }, "price": { "effectiveAmount": 5, "currency": "USD" }, "quantity": 2 })
                 .respond(201, {});
             cartSvc.addProductToCart(prod1.product, prod1.prices, 2, {});
             mockBackend.expectGET(cartUrl + '/' + cartId + '?siteCode=' + selectedSiteCode).respond(200,
@@ -243,7 +250,7 @@ describe('CartSvc Test', function () {
                 mockBackend.expectGET(cartUrl + '/' + cartId + '?siteCode=' + selectedSiteCode).respond(200, cartResponse);
 
                 console.log(prod1.product);
-                
+
                 var promise = cartSvc.addProductToCart(prod1.product, prod1.prices, 1, {});
                 var successSpy = jasmine.createSpy();
                 promise.then(successSpy);

@@ -19,6 +19,7 @@ describe('TopNavigationCtrl', function () {
         customerAccount: {
             accounts: [{providerId: 'google'}]
         },
+        getSite: jasmine.createSpy('getSite').andReturn('default'),
         user: {isAuthenticated: true, username: null, image: 'example.png'}
     };
     var $q;

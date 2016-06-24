@@ -10,6 +10,7 @@ describe('BrowseProductsCtrl', function () {
     mockedGlobalData.products.meta.total = 10;
     mockedGlobalData.getCurrencyId = jasmine.createSpy('getCurrencyId').andReturn('USD');
     mockedGlobalData.getCurrencySymbol = jasmine.createSpy('getCurrencySymbol').andReturn('$');
+    mockedGlobalData.getLanguageCode = jasmine.createSpy('getLanguageCode').andReturn('en');
     mockedGlobalData.getProductRefinements = jasmine.createSpy('getProductRefinements').andReturn([{id: 'name', name: 'A-Z'}]);
     mockedCategory.id = 123;
     mockedCategory.assignments = [
@@ -83,6 +84,7 @@ describe('BrowseProductsCtrl', function () {
         deferredProducts.resolve(productResult);
         mockedProductSvc.query = jasmine.createSpy('query').andReturn(deferredProducts.promise);
         mockedProductSvc.queryProductDetailsList = jasmine.createSpy('queryProductDetailsList').andReturn(deferredProducts.promise);
+        mockedProductSvc.queryProductDetailsListFromListPage = jasmine.createSpy('queryProductDetailsListFromListPage').andReturn(deferredProducts.promise);
     }));
 
     describe('Initialization', function () {
@@ -114,7 +116,7 @@ describe('BrowseProductsCtrl', function () {
 
             // trigger promise resolution:
             $scope.$digest();
-            expect(mockedProductSvc.queryProductDetailsList).toHaveBeenCalled();
+            expect(mockedProductSvc.queryProductDetailsListFromListPage).toHaveBeenCalled();
             // indirect testing via resolved promise
             expect($scope.products).toEqualData(productResult);
         });
@@ -163,7 +165,7 @@ describe('BrowseProductsCtrl', function () {
                 $scope.products = [];
                 $scope.addMore();
                 // validate that "add more" added products returned by query to the scope
-                expect(mockedProductSvc.queryProductDetailsList).toHaveBeenCalled();
+                expect(mockedProductSvc.queryProductDetailsListFromListPage).toHaveBeenCalled();
                 // expect($scope.products).toEqualData(products);
             });
 
@@ -180,7 +182,7 @@ describe('BrowseProductsCtrl', function () {
             it('setSortedPage should update current page and query products', function () {
 
                 $scope.setSortedPage();
-                expect(mockedProductSvc.queryProductDetailsList).toHaveBeenCalled();
+                expect(mockedProductSvc.queryProductDetailsListFromListPage).toHaveBeenCalled();
                 expect($scope.setSortedPageNumber).toBe(1)
             });
         });

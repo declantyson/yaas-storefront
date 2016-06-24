@@ -63,7 +63,7 @@ describe('GlobalData', function () {
 
 
         it('should use default language for unsupported language', function () {
-            var newLang = 'fr';
+            var newLang = 'es';
             GlobalData.setLanguage(newLang);
             expect($translate.use).toHaveBeenCalledWith('en');
             expect(mockedCookieSvc.setLanguageCookie).toHaveBeenCalled();
