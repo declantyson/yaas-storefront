@@ -2,12 +2,12 @@
 <div ng-cloak id="menu">
     <ul class="navi">
         <li ng-repeat="category in categories" > <!-- class="has-sub" -->
-            <a ui-sref="base.category( {catName: category.slug} )" class="mainCategory categoryLevel" ng-click="hideMobileNav()">
-                {{ category.name  }}
-            </a>
             <label for="secondarycategory{{$index}}" class="toggle-sub" onclick="" ng-if="category.subcategories">
                 <span class="hyicon hyicon-chevron-thin-right"></span>
             </label>
+            <a ui-sref="base.category( {catName: category.slug} )" class="mainCategory categoryLevel" ng-click="hideMobileNav()">
+                {{ category.name  }}
+            </a>
             <input type="checkbox" id="secondarycategory{{$index}}" class="sub-nav-check" ng-if="category.subcategories">
             <ul id="secondarycategory{{$index}}-sub" class="sub-nav" ng-if="category.subcategories">
                 <li class="sub-heading">
@@ -15,12 +15,12 @@
                     {{category.name}}
                 </li>
                 <li ng-repeat="sub2 in category.subcategories" >
-                    <a data-ui-sref="base.category( {catName: sub2.slug} )" class="secondaryCategory categoryLevel" ng-class="{'noSubCategories': sub2.subcategories == undefined}" ng-click="hideMobileNav()">
-                        {{sub2.name }}
-                    </a>
                     <label for="tertiarycategory{{$index}}" class="toggle-sub" onclick="" ng-if="sub2.subcategories">
                         <span class="hyicon hyicon-chevron-thin-right"></span>
                     </label>
+                    <a data-ui-sref="base.category( {catName: sub2.slug} )" class="secondaryCategory categoryLevel" ng-class="{'noSubCategories': sub2.subcategories == undefined}" ng-click="hideMobileNav()">
+                        {{sub2.name }}
+                    </a>
                     <input type="checkbox" id="tertiarycategory{{$index}}" class="sub-nav-check" ng-if="sub2.subcategories">
                     <ul class="sub-nav" id="tertiarycategory{{$index}}-sub">
                         <li class="sub-heading">

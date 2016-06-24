@@ -352,8 +352,10 @@ angular.module('ds.cart')
                             }
                         }
                         // We have to provide only one language when POSTing to the cart otherwise it breaks
-                        product.name = product.name[GlobalData.getLanguageCode()];
-                        product.description = product.description[GlobalData.getLanguageCode()];
+                        if(typeof(product.name) === 'object' && product.name !== null) {
+                            product.name = product.name[GlobalData.getLanguageCode()];
+                            product.description = product.description[GlobalData.getLanguageCode()];
+                        }
                         return createCartItem(product, prices, productDetailQty, config);
                     } else {
                         return $q.when({});

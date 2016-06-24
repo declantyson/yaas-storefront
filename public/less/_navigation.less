@@ -67,6 +67,28 @@
         }
       }
     }
+
+    .authentication-cnt{
+      border-top: none;
+      padding: 0px;
+    }
+
+    .my-account-link {
+      height: auto;
+      border-bottom: 1px solid #dedede;
+      padding: 20px 18px;
+      background-color: @lightgrey;
+      a {
+        color: #000;
+        font-size: 16px;
+        font-weight: 200;
+        &.signin {
+          float: none;
+          padding: 0;
+          margin: 0;
+        }
+      }
+    }
   }
 
   .social-icons{
@@ -149,7 +171,6 @@
   }
 
   #menu{
-    margin-bottom: 5px;
     font-size: 21px;
   }
 
@@ -182,6 +203,7 @@
 
   #menu li{
     overflow: hidden;
+    padding: 0;
 
     + li{
       border-top: none;
@@ -191,11 +213,12 @@
 
   #menu li a {
     display:block;
-    font-size:21px;
-    padding: 5px 0;
+    font-size:17px;
+    font-weight: 200;
+    padding: 5px 18px;
     text-decoration:none;
     float: left;
-    width: 90%
+    width: 100%
   }
 
   #menu li a:hover,
@@ -227,7 +250,8 @@
     padding: 0;
     cursor:pointer;
     text-align:center;
-    float: right;
+    right: 18px;
+    position: absolute;
   }
 
   .container,
