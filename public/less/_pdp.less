@@ -59,6 +59,10 @@
     
     .taxMessage{
       margin: 0 0 20px 0;
+      word-wrap: break-word;
+      a {
+        text-transform: lowercase;
+      }
     }
 
     .buyButton{
@@ -66,6 +70,39 @@
       button{
         padding: 14px 89px;
       }
+    }
+
+    .product-options{
+
+      .input-group{
+        width: 100% !important;
+        height: 48px;
+        border-left-width: 0;
+        padding: 0;
+        box-shadow: 0 0 0;
+      }
+
+      .input-group-addon{
+        min-width: 100px;
+        text-align: left;
+        text-transform: uppercase;
+        padding:15px;
+      }
+      
+      .form-control{
+        height: 48px;
+        font-weight: bold;
+      }
+
+      .ui-select-placeholder{
+        opacity: .5;
+        font-weight: normal;
+      }
+
+      .quantity{
+        width: 100%;
+      }
+
     }
 
     .cartPanel{
@@ -153,16 +190,12 @@
       margin: 20px 0 0 0;
       line-height: 19px;
       color: #5b5b5b;
-
-      height:105px;
-      -webkit-column-count: 2;
-      -moz-column-count: 2;
-      column-count: 2;
-      -webkit-column-gap: 90px;
-      -moz-column-gap: 90px;
-      column-gap: 90px;
     }
 
+  }
+  
+  .product-extension-item {
+    padding: 10px;
   }
 }
 
