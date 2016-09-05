@@ -13,28 +13,28 @@
 'use strict';
 
 angular.module('ds.checkout')
-    /**
-     * This is the controller for the checkout view, which includes the order form as well as a view of the cart.
-     *
-     * The scope provides access to the data models "order" and "cart", as well as some properties to control display
-     * of errors.
-     *
-     * In the checkout HTML, the "steps" are created by using nested forms which can be individually validated.
-     *
-     * The wizard directive defined in mobileCheckoutWizard does not come into play in full screen mode.  Required fields
-     * are checked and enforced when the user indicates "submit".
-     *
-     * The controller also includes logic to copy the bill-to address to the ship-to address if that's what the user has indicated.
-     *
-     * This version assumes that payment processing and pre-validation is done through Stripe.
-     *
-     * While the order is processing (both Stripe validation and order API call), the submit button is disabled.
-     * On success, the order confirmation page is shown.  On failure, an error message is displayed and the submit button
-     * is re-enabled so that the user can make changes and resubmit if needed.
-     *
-     * */
-    .controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$anchorScroll', 'CheckoutSvc','cart', 'order', '$state', '$modal', 'AuthSvc', 'AccountSvc', 'AuthDialogManager', 'GlobalData', 'ShippingSvc', 'shippingZones', 'shippingCountries', '$q', 'CartSvc', '$timeout',
-            function ($rootScope, $scope, $location, $anchorScroll, CheckoutSvc, cart, order, $state, $modal, AuthSvc, AccountSvc, AuthDialogManager, GlobalData, ShippingSvc, shippingZones, shippingCountries, $q, CartSvc, $timeout) {
+/**
+ * This is the controller for the checkout view, which includes the order form as well as a view of the cart.
+ *
+ * The scope provides access to the data models "order" and "cart", as well as some properties to control display
+ * of errors.
+ *
+ * In the checkout HTML, the "steps" are created by using nested forms which can be individually validated.
+ *
+ * The wizard directive defined in mobileCheckoutWizard does not come into play in full screen mode.  Required fields
+ * are checked and enforced when the user indicates "submit".
+ *
+ * The controller also includes logic to copy the bill-to address to the ship-to address if that's what the user has indicated.
+ *
+ * This version assumes that payment processing and pre-validation is done through Stripe.
+ *
+ * While the order is processing (both Stripe validation and order API call), the submit button is disabled.
+ * On success, the order confirmation page is shown.  On failure, an error message is displayed and the submit button
+ * is re-enabled so that the user can make changes and resubmit if needed.
+ *
+ * */
+    .controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$anchorScroll', 'CheckoutSvc','cart', 'order', '$state', '$modal', 'AuthSvc', 'AccountSvc', 'AuthDialogManager', 'GlobalData', 'ShippingSvc', 'shippingZones', '$q', 'CartSvc', '$timeout',
+        function ($rootScope, $scope, $location, $anchorScroll, CheckoutSvc, cart, order, $state, $modal, AuthSvc, AccountSvc, AuthDialogManager, GlobalData, ShippingSvc, shippingZones, $q, CartSvc, $timeout) {
 
             $scope.order = order;
             $scope.displayCart = false;
@@ -45,6 +45,7 @@ angular.module('ds.checkout')
             //this method changes cart. That is the reason cart was empty on refresh
             //With this implementation we are getting the cart object from service after it is loaded
             $scope.shippingZones = shippingZones || [];
+            $scope.shippingCountries = ShippingSvc.getShipToCountries(shippingZones);
             $scope.currencySymbol = GlobalData.getCurrencySymbol(cart.currency);
             $scope.user = GlobalData.user;
             $scope.addresses = [];
@@ -484,24 +485,18 @@ angular.module('ds.checkout')
             };
 
             $scope.openAddressDialog = function(target, addType) {
+                $scope.isDialog = true;
+                $scope.showAddressDefault = 6;
+                $scope.showAddressFilter = $scope.showAddressDefault;
+                $scope.showAllAddressButton = $scope.showAddressDefault < $scope.addresses.length;
+                $scope.showAllAddresses = false;
+                $scope.target = target;
+                $scope.addType = addType;
                 addressModalInstance = $modal.open({
                     templateUrl: './js/app/account/templates/addresses-dialog.html',
                     windowClass: 'addressBookModal',
-                    scope: $scope,
-                    resolve: {
-                        addresses: ['AccountSvc', function(AccountSvc) {
-                            return AccountSvc.getAddresses().then(function() {
-                                $scope.isDialog = true;
-                                $scope.showAddressDefault = 6;
-                                $scope.showAddressFilter = $scope.showAddressDefault;
-                                $scope.showAllAddressButton = $scope.showAddressDefault < $scope.addresses.length;
-                                $scope.showAllAddresses = false;
-                                $scope.target = target;
-                                $scope.addType = addType;
-                            });
-                        }]
-                    }
-                });
+                    scope: $scope
+                  });
             };
 
             $scope.closeAddressDialog = function () {
@@ -553,7 +548,7 @@ angular.module('ds.checkout')
             };
 
             $scope.isShipToCountry = function (countryID) {
-                return shippingCountries.indexOf(countryID) > -1;
+                return $scope.shippingCountries.indexOf(countryID) > -1;
             };
 
             $scope.ifShipAddressApplicable = function (address, target) {
@@ -580,6 +575,7 @@ angular.module('ds.checkout')
 
             $rootScope.$on('language:updated', function () {
                 updateShippingCost($scope.order.shipTo);
+                $scope.displayCart = false;
             });
 
             $scope.$on('$destroy', unbindPreviewOrder);
@@ -725,22 +721,10 @@ angular.module('ds.checkout')
                         'shipToAddress': address
                     };
 
-                    var costsPromise = ShippingSvc.getShippingCosts(data).then(
-                        function (result) {
-                            return result;
-                        }
-                    );
-
-                    var minCostPromise = ShippingSvc.getMinimumShippingCost(data).then(
-                        function (result) {
-                            return result;
-                        }
-                    );
-
-                    $q.all([costsPromise, minCostPromise]).then(function(data){
-                        var shippingCosts = data[0];
+                    ShippingSvc.getShippingCosts(data).then(function(response){
+                        var shippingCosts = response;
                         $scope.shippingCosts = [];
-                        $scope.shippingCost = data[1];
+                        $scope.shippingCost = ShippingSvc.getMinimumShippingCost(shippingCosts);
                         $scope.currencySymbol = GlobalData.getCurrencySymbol();
                         for(var j = 0; j < shippingCosts.length; j++){
                             for (var i = 0; i < shippingCosts[j].methods.length; i++) {
@@ -748,11 +732,6 @@ angular.module('ds.checkout')
                                 angular.copy(shippingCosts[j].methods[i], shippingCostObject);
                                 shippingCostObject.zoneId = shippingCosts[j].zone.id;
                                 $scope.shippingCosts.push(shippingCostObject);
-                                if (shippingCosts[j].methods[i].fee.amount === $scope.shippingCost.fee.amount) {
-                                    $scope.shippingCost.zoneId = shippingCosts[j].zone.id;
-                                    $scope.shippingCost.id = shippingCosts[j].methods[i].id;
-                                    $scope.shippingCost.name = shippingCosts[j].methods[i].name;
-                                }
                             }
                         }
                     });
