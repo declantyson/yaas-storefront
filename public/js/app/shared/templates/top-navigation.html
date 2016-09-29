@@ -1,12 +1,15 @@
 <div class="mobileNav hidden-lg hidden-md visible-sm visible-xs">
     <nav class="top-navigation row" ng-cloak>
-        <div class="col-xs-4 ">
+        <div class="col-sm-4 col-xs-1">
             <button type="button" class="btn btn-link navbar-btn menu" ng-click="toggleOffCanvas()">
                 <span class="hyicon hyicon-menu"></span>
             </button>
         </div>
-        <div class="col-xs-4 text-center">
-            <a class="logo" ui-sref="base.home"><img ng-src="{{GlobalData.store.logo || 'img/logo.png'}}" alt=""></a>
+        <div class="col-sm-4 col-xs-7 text-center">
+            <a class="logo" ui-sref="base.home">
+                <img src="./img/worldpay.png" alt="Worldpay, the future of payment"/>
+                <!--<img ng-src="{{GlobalData.store.logo || 'img/logo.png'}}" alt="">-->
+            </a>
         </div>
 
         <div class="col-xs-4 text-right">
@@ -36,7 +39,9 @@
         <div class="content-container">
             <div class="col-xs-8 logo">
                 <a ui-sref="base.home" class="logo">
-                   {{ selectedSite.name || translate }}
+                    <img src="./img/worldpay_large.png" alt="Worldpay">
+                    The future of payment
+                    <!--{{ selectedSite.name || translate }}-->
                 </a>
             </div>
             <div class="col-xs-4 cart">

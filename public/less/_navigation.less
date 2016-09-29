@@ -372,7 +372,9 @@ a.signout{
     padding: 10px;
     display: inline-block;
     img{
-      height: 55px;
+      max-height: 55px;
+      width: 100%;
+      padding-top: 13px;
     }
   }
 
@@ -627,7 +629,7 @@ a.signout{
 
 .desktopNav{
 
-  background-color: @darkestgrey;
+  background-color: @darkergrey;
 
   .logo{
     margin-top: 8px;
@@ -636,6 +638,10 @@ a.signout{
     font-weight: 500;
     color: @white;
     transition: color 0.25s ease-out;
+    img {
+      padding-bottom: 20px;
+      display: block;
+    }
     &:hover {
       text-decoration: none;
       color: @defaultgrey;
@@ -798,7 +804,7 @@ a.signout{
 .mobileNav {
   .top-navigation {
     border-bottom: 1px solid #d4d5d5;
-    background-color: @darkestgrey;
+    background-color: @darkgrey;
   }
   .hyicon-menu:before {
     color: @white;
@@ -830,7 +836,7 @@ a.signout{
 }
 
 .pageFooter{
-  background-color: #5b5b5b;
+  background-color: @darkgrey;
   padding: 40px 58px;
   color: #fff;
 
@@ -853,11 +859,14 @@ a.signout{
     }
   }
 
-
-
-  .links{
-    padding-top: 8px;
-
+  .links {
+    img {
+      display: block;
+      margin: 0 auto 15px auto;
+      @media screen and (max-width: 1200px) {
+        margin-top: 15px;
+      }
+    }
   }
 
   a{

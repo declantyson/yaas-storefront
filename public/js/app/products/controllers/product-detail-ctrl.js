@@ -18,7 +18,7 @@ angular.module('ds.products')
      * cart information has been retrieved from the service, the 'cart' view will be shown.
      */
     .controller('ProductDetailCtrl', ['$scope', '$rootScope', 'CartSvc', 'product', 'lastCatId', 'GlobalData', 'CategorySvc','$filter', '$modal', 'shippingZones', 'Notification', 'ProductExtensionHelper', 'variants', 'variantPrices', 'productFactory',
-        function($scope, $rootScope, CartSvc, product, lastCatId, GlobalData, CategorySvc, $filter, $modal, shippingZones, Notification, ProductExtensionHelper, variants, variantPrices, productFactory) {
+        function($scope, $rootScope, CartSvc, product, lastCatId, GlobalData, CategorySvc, $filter, $modal, shippingZones, Notification, ProductExtensionHelper, variants, variantPrices, productFactory, $window) {
             var modalInstance;
 
             $scope.activeTab = 'description';

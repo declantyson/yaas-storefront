@@ -76,9 +76,6 @@ angular.module('ds.router', [])
                         'main@': {
                             templateUrl: 'js/app/search/templates/search-list.html',
                             controller: 'SearchListCtrl'
-                        },
-                        'footer@': {
-                            template: ''
                         }
                     },
                     resolve:{
@@ -99,9 +96,6 @@ angular.module('ds.router', [])
                         'main@': {
                             templateUrl: 'js/app/products/templates/product-list.html',
                             controller: 'BrowseProductsCtrl'
-                        },
-                        'footer@': {
-                            template:''
                         }
                     },
                     resolve: {

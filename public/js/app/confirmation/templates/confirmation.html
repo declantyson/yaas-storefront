@@ -17,7 +17,7 @@
     <div class="text-center order-details" ng-if="entity === 'order'">
         <div class="row">
             <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-
+                <img src="./img/worldpay_large.png" alt="Worldpay"/>
                 <h2 ng-if="isAuthenticated" class="orderNumber">{{'ORDER' | translate}} # <a ui-sref="base.orderDetail({orderId: orderInfo.orderId})">{{ orderInfo.orderId }}</a></h2>
                 
                 <h2 ng-if="!isAuthenticated" class="orderNumber">{{'ORDER' | translate}}# {{ orderInfo.orderId }}</h2>
