@@ -386,7 +386,7 @@ a.signout{
 .navbar-btn.cart{
   position: relative;
 
-  background: @darkergrey;
+  background: @darkestgrey;
   color: #fff;
   font-size: 32px;
   margin-top: 0;
@@ -629,18 +629,18 @@ a.signout{
 
 .desktopNav{
 
-  background-color: @darkergrey;
+  background-color: @darkestgrey;
 
   .logo{
     margin-top: 8px;
     font-family: 'LemonMilk', 'Helvetica', sans-serif;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 500;
     color: @white;
     transition: color 0.25s ease-out;
     img {
-      padding-bottom: 20px;
-      display: block;
+      padding-right: 20px;
+      max-width: 320px;
     }
     &:hover {
       text-decoration: none;
@@ -836,7 +836,7 @@ a.signout{
 }
 
 .pageFooter{
-  background-color: @darkgrey;
+  background-color: @darkergrey;
   padding: 40px 58px;
   color: #fff;
 
@@ -863,6 +863,7 @@ a.signout{
     img {
       display: block;
       margin: 0 auto 15px auto;
+      max-width: 240px;
       @media screen and (max-width: 1200px) {
         margin-top: 15px;
       }
