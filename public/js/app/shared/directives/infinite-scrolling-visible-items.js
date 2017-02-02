@@ -53,7 +53,7 @@ angular.module('ds.shared')
                 };
 
                 //Function that handles events and calculates
-                var handler = function () {
+                var handler = function (e) {
                     if ($('#refineAffix') && $('#refineAffix')[0]) { // FIXME: the henaler is added globaly and handle events even it is not necessary
                         refineHeight = $('#refineAffix')[0].clientHeight;
                     }
