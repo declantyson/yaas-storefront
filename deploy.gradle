@@ -1,5 +1,5 @@
 cloudfoundry {
-	application = 'digitalselling'
+	application = 'e2y-worldpay'
 	hosts = [application]
 	host = application
 	buildpack = 'nodejs_buildpack'
